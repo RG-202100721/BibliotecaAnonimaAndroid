@@ -3,7 +3,11 @@ package pt.ips.pam.biblioteca_anonima_android;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import java.util.ArrayList;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,8 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
         DB.getBooks(new VolleyHandler.callback() {
             @Override
-            public void onSuccess(ArrayList<String> data) {
+            public void onSuccess(JSONArray data) throws JSONException {
+                for (int i = 0; i < data.length(); i++){
+                    JSONObject book = data.getJSONObject(i);
 
+                    TextView text = findViewById(R.id.text);
+                    text.setText(book.toString() + "\n");
+                }
             }
         });
     }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -15,17 +14,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DatabaseRequest {
 
     private final Context currentContext;
-    private ProgressDialog progDialog;
+    private final ProgressDialog progDialog;
     public DatabaseRequest(Context context) {
         currentContext = context;
         progDialog = new ProgressDialog(context);
+        progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progDialog.setMax(100);
     }
 
     private static final String Host = "https://biblioteca-anonima.onrender.com";
@@ -39,17 +39,22 @@ public class DatabaseRequest {
         URL = Host + "/getBooks";
 
         progDialog.setMessage("Obtendo os livros da biblioteca...");
+        progDialog.setProgress(0);
         progDialog.show();
         request = new StringRequest(Request.Method.GET, URL,
                 onResponse(new VolleyHandler.callback() {
                     @Override
-                    public void onSuccess(ArrayList<String> data) {
+                    public void onSuccess(JSONArray data) throws JSONException {
+                        progDialog.setProgress(75);
+                        progDialog.setMessage("Atualizando o interface...");
                         callback.onSuccess(data);
+                        progDialog.setProgress(100);
                         progDialog.dismiss();
                     }
                 }),
                 onError("Não foi possível obter os livros.")
         );
+        progDialog.setProgress(25);
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
@@ -57,6 +62,7 @@ public class DatabaseRequest {
         URL = Host + "/create";
 
         progDialog.setMessage("Criando um novo livro...");
+        progDialog.setProgress(0);
         progDialog.show();
         request = new StringRequest(Request.Method.POST, URL, null, onError("Não foi possível criar o livro.")){
             @Override
@@ -73,6 +79,8 @@ public class DatabaseRequest {
                 return params;
             }
         };
+
+        VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
     public void edit() {
@@ -90,12 +98,16 @@ public class DatabaseRequest {
             @Override
             public void onResponse(String response) {
                 try {
+                    progDialog.setMessage("Obtendo resposta do servidor...");
+                    progDialog.setProgress(50);
                     JSONObject = new JSONObject(response);
-                    callback.onSuccess(convertFromJSON(JSONObject));
+                    JSONArray = JSONObject.getJSONArray("data");
+                    callback.onSuccess(JSONArray);
                 }
                 catch (JSONException error) {
                     Log.d("volleyError", error.toString());
-                    Toast.makeText(currentContext, "JSON Conversion Failed.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(currentContext, "Conversão para JSON falhou.",Toast.LENGTH_LONG).show();
+                    progDialog.dismiss();
                 }
             }
         };
@@ -110,11 +122,5 @@ public class DatabaseRequest {
                 progDialog.dismiss();
             }
         };
-    }
-
-    private ArrayList<String> data;
-    private ArrayList<String> convertFromJSON(JSONObject object) {
-
-        return data;
     }
 }

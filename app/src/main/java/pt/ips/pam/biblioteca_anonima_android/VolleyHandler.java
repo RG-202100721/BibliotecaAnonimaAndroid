@@ -6,7 +6,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 public class VolleyHandler {
 
@@ -20,7 +21,7 @@ public class VolleyHandler {
     }
 
     public interface callback {
-        void onSuccess(ArrayList<String> data);
+        void onSuccess(JSONArray data) throws JSONException;
     }
 
     public static VolleyHandler getInstance(Context context) {
