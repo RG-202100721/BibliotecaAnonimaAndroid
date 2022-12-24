@@ -3,38 +3,23 @@ package pt.ips.pam.biblioteca_anonima_android;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DatabaseRequest DB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DB = new DatabaseRequest(MainActivity.this);
 
-        //volley request test
-        String URL = "https://biblioteca-anonima.onrender.com/getBooks";
+        DB.getBooks(new VolleyHandler.callback() {
+            @Override
+            public void onSuccess(ArrayList<String> data) {
 
-        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("volley", response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("volley", error.toString());
             }
         });
-        queue.add(stringRequest);
     }
 }
