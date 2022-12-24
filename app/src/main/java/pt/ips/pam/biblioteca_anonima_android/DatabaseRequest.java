@@ -2,6 +2,7 @@ package pt.ips.pam.biblioteca_anonima_android;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -64,7 +65,7 @@ public class DatabaseRequest {
         progDialog.setMessage("Criando um novo livro...");
         progDialog.setProgress(0);
         progDialog.show();
-        request = new StringRequest(Request.Method.POST, URL, null, onError("Não foi possível criar o livro.")){
+        request = new StringRequest(Request.Method.POST, URL, null, onError("Não foi possível criar o livro.")) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String,String> headers = new HashMap<>();
@@ -86,11 +87,33 @@ public class DatabaseRequest {
     public void edit() {
         URL = Host + "/edit";
 
+
     }
 
-    public void delete() {
+    public void delete(DatabaseTables table, int id) {
         URL = Host + "/delete";
 
+        progDialog.setMessage("Apagando o registo...");
+        progDialog.setProgress(0);
+        progDialog.show();
+        request = new StringRequest(Request.Method.POST, URL, onNormalResponse(), onError("Não foi possível apagar o registo.")) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String,String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+
+            @Override
+            protected Map<String,String> getParams() {
+                Map<String,String> params = new HashMap<>();
+                params.put("Tabela", String.valueOf(table));
+                params.put("ID", String.valueOf(id));
+                return params;
+            }
+        };
+
+        VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
     private Response.Listener<String> onResponse(VolleyHandler.callback callback) {
@@ -113,6 +136,32 @@ public class DatabaseRequest {
         };
     }
 
+    private Response.Listener<String> onNormalResponse() {
+        return new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    progDialog.setMessage("Obtendo resposta do servidor...");
+                    progDialog.setProgress(50);
+                    JSONObject = new JSONObject(response);
+                    if (JSONObject.getString("message") == "0 results.")
+                        Toast.makeText(currentContext, "Algo correu mal durante a operação.", Toast.LENGTH_LONG).show();
+                    else {
+                        Log.d("volleyMessage", JSONObject.getString("message"));
+                        progDialog.setMessage("Operação concluída.");
+                        progDialog.setProgress(100);
+                    }
+                    progDialog.dismiss();
+                }
+                catch (JSONException error) {
+                    Log.d("volleyError", error.toString());
+                    Toast.makeText(currentContext, "Conversão para JSON falhou.",Toast.LENGTH_LONG).show();
+                    progDialog.dismiss();
+                }
+            }
+        };
+    }
+
     private Response.ErrorListener onError(String text) {
         return new Response.ErrorListener() {
             @Override
@@ -124,3 +173,4 @@ public class DatabaseRequest {
         };
     }
 }
+
