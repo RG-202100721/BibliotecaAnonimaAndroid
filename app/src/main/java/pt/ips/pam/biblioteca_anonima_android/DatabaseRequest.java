@@ -67,7 +67,7 @@ public class DatabaseRequest {
             progDialog.setMessage("Criando um novo registo...");
             progDialog.setProgress(0);
             progDialog.show();
-            request = new StringRequest(Request.Method.POST, URL, null, onError("Não foi possível criar o livro.")) {
+            request = new StringRequest(Request.Method.POST, URL, onNormalResponse("O registo foi criado."), onError("Não foi possível criar o livro.")) {
                 @Override
                 public Map<String, String> getHeaders() {
                     return requestHeaders();
@@ -92,7 +92,7 @@ public class DatabaseRequest {
                     return params;
                 }
             };
-
+            progDialog.setProgress(25);
             VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
         }
     }
@@ -106,7 +106,7 @@ public class DatabaseRequest {
             progDialog.setMessage("Editando o registo...");
             progDialog.setProgress(0);
             progDialog.show();
-            request = new StringRequest(Request.Method.PUT, URL, onNormalResponse(), onError("Não foi possível editar o registo.")) {
+            request = new StringRequest(Request.Method.PUT, URL, onNormalResponse("O registo foi editado."), onError("Não foi possível editar o registo.")) {
                 @Override
                 public Map<String, String> getHeaders() {
                     return requestHeaders();
@@ -132,7 +132,7 @@ public class DatabaseRequest {
                     return params;
                 }
             };
-
+            progDialog.setProgress(25);
             VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
         }
     }
@@ -143,7 +143,7 @@ public class DatabaseRequest {
         progDialog.setMessage("Apagando o registo...");
         progDialog.setProgress(0);
         progDialog.show();
-        request = new StringRequest(Request.Method.DELETE, URL, onNormalResponse(), onError("Não foi possível apagar o registo.")) {
+        request = new StringRequest(Request.Method.DELETE, URL, onNormalResponse("O registo foi apagado."), onError("Não foi possível apagar o registo.")) {
             @Override
             public Map<String, String> getHeaders() {
                 return requestHeaders();
@@ -157,7 +157,7 @@ public class DatabaseRequest {
                 return params;
             }
         };
-
+        progDialog.setProgress(25);
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
@@ -181,7 +181,7 @@ public class DatabaseRequest {
         };
     }
 
-    private Response.Listener<String> onNormalResponse() {
+    private Response.Listener<String> onNormalResponse(String text) {
         return new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -197,6 +197,7 @@ public class DatabaseRequest {
                         Log.d("volleyLog", JSONObject.getString("message"));
                         progDialog.setMessage("Operação concluída.");
                         progDialog.setProgress(100);
+                        Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
                     }
                     progDialog.dismiss();
                 }
@@ -214,7 +215,7 @@ public class DatabaseRequest {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("volleyError", error.toString());
-                Toast.makeText(currentContext, text,Toast.LENGTH_LONG).show();
+                Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
                 progDialog.dismiss();
             }
         };
