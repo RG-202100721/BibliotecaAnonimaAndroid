@@ -2,7 +2,6 @@ package pt.ips.pam.biblioteca_anonima_android;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -59,56 +58,102 @@ public class DatabaseRequest {
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
-    public void create() {
+    public void create(DatabaseTables table, JSONObject newData) {
         URL = Host + "/create";
 
-        progDialog.setMessage("Criando um novo livro...");
-        progDialog.setProgress(0);
-        progDialog.show();
-        request = new StringRequest(Request.Method.POST, URL, null, onError("Não foi possível criar o livro.")) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String,String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
+        if (table.checkJSON(table, newData))
+            Toast.makeText(currentContext, "Operação cancelada.", Toast.LENGTH_LONG).show();
+        else {
+            progDialog.setMessage("Criando um novo registo...");
+            progDialog.setProgress(0);
+            progDialog.show();
+            request = new StringRequest(Request.Method.POST, URL, null, onError("Não foi possível criar o livro.")) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    return requestHeaders();
+                }
 
-            @Override
-            protected Map<String,String> getParams() {
-                Map<String,String> params = new HashMap<>();
-                params.put("key", "value");
-                return params;
-            }
-        };
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
 
-        VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
+                    try {
+                        boolean pass = true;
+                        while (pass) {
+                            params.put(newData.keys().next(), newData.getString(newData.keys().next()));
+                            if (!newData.keys().hasNext()) pass = false;
+                        }
+                    }
+                    catch (JSONException e) {
+                        Log.d("volleyError", e.toString());
+                        Toast.makeText(currentContext, "Algo correu mal com os parâmetros do Volley Request.", Toast.LENGTH_LONG).show();
+                        progDialog.dismiss();
+                    }
+                    return params;
+                }
+            };
+
+            VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
+        }
     }
 
-    public void edit() {
+    public void edit(DatabaseTables table, int rowID, JSONObject newData) {
         URL = Host + "/edit";
 
+        if (table.checkJSON(table, newData))
+            Toast.makeText(currentContext, "Operação cancelada.", Toast.LENGTH_LONG).show();
+        else {
+            progDialog.setMessage("Editando o registo...");
+            progDialog.setProgress(0);
+            progDialog.show();
+            request = new StringRequest(Request.Method.PUT, URL, onNormalResponse(), onError("Não foi possível editar o registo.")) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    return requestHeaders();
+                }
 
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("ID", String.valueOf(rowID));
+
+                    try {
+                        boolean pass = true;
+                        while (pass) {
+                            params.put(newData.keys().next(), newData.getString(newData.keys().next()));
+                            if (!newData.keys().hasNext()) pass = false;
+                        }
+                    }
+                    catch (JSONException e) {
+                        Log.d("volleyError", e.toString());
+                        Toast.makeText(currentContext, "Algo correu mal com os parâmetros do Volley Request.", Toast.LENGTH_LONG).show();
+                        progDialog.dismiss();
+                    }
+                    return params;
+                }
+            };
+
+            VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
+        }
     }
 
-    public void delete(DatabaseTables table, int id) {
+    public void delete(DatabaseTables table, int rowID) {
         URL = Host + "/delete";
 
         progDialog.setMessage("Apagando o registo...");
         progDialog.setProgress(0);
         progDialog.show();
-        request = new StringRequest(Request.Method.POST, URL, onNormalResponse(), onError("Não foi possível apagar o registo.")) {
+        request = new StringRequest(Request.Method.DELETE, URL, onNormalResponse(), onError("Não foi possível apagar o registo.")) {
             @Override
             public Map<String, String> getHeaders() {
-                Map<String,String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
+                return requestHeaders();
             }
 
             @Override
             protected Map<String,String> getParams() {
                 Map<String,String> params = new HashMap<>();
                 params.put("Tabela", String.valueOf(table));
-                params.put("ID", String.valueOf(id));
+                params.put("ID", String.valueOf(rowID));
                 return params;
             }
         };
@@ -144,10 +189,12 @@ public class DatabaseRequest {
                     progDialog.setMessage("Obtendo resposta do servidor...");
                     progDialog.setProgress(50);
                     JSONObject = new JSONObject(response);
-                    if (JSONObject.getString("message") == "0 results.")
+                    if (JSONObject.getString("message").equals("0 results.")) {
+                        Log.d("volleyLog", "0 results.");
                         Toast.makeText(currentContext, "Algo correu mal durante a operação.", Toast.LENGTH_LONG).show();
+                    }
                     else {
-                        Log.d("volleyMessage", JSONObject.getString("message"));
+                        Log.d("volleyLog", JSONObject.getString("message"));
                         progDialog.setMessage("Operação concluída.");
                         progDialog.setProgress(100);
                     }
@@ -171,6 +218,12 @@ public class DatabaseRequest {
                 progDialog.dismiss();
             }
         };
+    }
+
+    private Map<String, String> requestHeaders() {
+        Map<String,String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json; charset=utf-8");
+        return headers;
     }
 }
 

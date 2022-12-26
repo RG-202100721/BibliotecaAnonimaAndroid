@@ -30,5 +30,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        DB.create(DatabaseTables.LIVRO, new JSONObject());
+
+        DB.edit(DatabaseTables.EDITORA, 5, new JSONObject());
+
+        DB.delete(DatabaseTables.CATEGORIA, 3);
     }
 }
