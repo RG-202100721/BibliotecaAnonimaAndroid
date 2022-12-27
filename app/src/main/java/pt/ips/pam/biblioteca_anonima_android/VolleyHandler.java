@@ -14,6 +14,7 @@ public class VolleyHandler {
     private static VolleyHandler handler;
     private RequestQueue queue;
     private final Context finalContext;
+    private final CustomHurlStack customHurlStack = new CustomHurlStack();
 
     public VolleyHandler(Context context) {
         finalContext = context;
@@ -30,7 +31,7 @@ public class VolleyHandler {
     }
 
     public RequestQueue getRequestQueue() {
-        if (queue == null) queue = Volley.newRequestQueue(finalContext.getApplicationContext());
+        if (queue == null) queue = Volley.newRequestQueue(finalContext.getApplicationContext(), customHurlStack);
         return queue;
     }
 
