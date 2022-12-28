@@ -1,3 +1,5 @@
+//processamento da RequestQueue (Volley) utilizando métodos convenientes e a implementação de um callback.
+
 package pt.ips.pam.biblioteca_anonima_android;
 
 import android.content.Context;

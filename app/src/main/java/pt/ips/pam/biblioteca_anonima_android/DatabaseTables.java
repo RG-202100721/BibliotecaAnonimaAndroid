@@ -1,3 +1,5 @@
+//enumeração das tabelas da base de dados e verificação do JSON a ser enviado para a API.
+
 package pt.ips.pam.biblioteca_anonima_android;
 
 import android.util.Log;
@@ -5,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +31,7 @@ public enum DatabaseTables {
 
     public boolean checkJSON(DatabaseTables table, JSONObject data) {
         boolean pass = false;
-        String text = "Campos do objeto JSON estão errados.\n";
+        String text = "Campos ou valores do objeto JSON estão errados.\n";
         try {
             switch (table) {
                 case CATEGORIA:
@@ -45,9 +48,17 @@ public enum DatabaseTables {
                     text += "Campos JSON para a tabela \"Livro\" são:\nTitulo [String]\nISBN [String]\nNumero_Paginas [int]\nIDEditora [int]\nCapa [String]\nIDAutores [Array JSON de ints]\nIDCategorias [Array JSON de ints]";
                     if (data.length() == 7 && !data.getString("Titulo").equals("") && !data.getString("ISBN").equals("")
                             && data.getInt("Numero_Paginas") > 0 && data.getInt("IDEditora") > 0
-                            && !data.getString("Capa").equals("") && data.getInt("IDAutores") > 0
-                            && data.getInt("IDCategorias") > 0)
-                        pass = true;
+                            && !data.getString("Capa").equals("")) {
+                        JSONArray autores = data.getJSONArray("IDAutores");
+                        JSONArray categorias = data.getJSONArray("IDCategorias");
+                        if (autores.length() > 0 && categorias.length() > 0) {
+                            for (int i = 0; i < autores.length(); i++)
+                                if (autores.getInt(0) <= 0) throw new JSONException("DB row index 0 or below");
+                            for (int i = 0; i < categorias.length(); i++)
+                                if (categorias.getInt(0) <= 0) throw new JSONException("DB row index 0 or below");
+                            pass = true;
+                        }
+                    }
                     break;
             }
             if (!pass) errorJSON(text, null);

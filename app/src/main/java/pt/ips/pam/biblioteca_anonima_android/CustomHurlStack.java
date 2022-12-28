@@ -1,3 +1,4 @@
+//Ficheiro copiado da biblioteca Volley (editado para corrigir o problema abaixo descrito)
 //O método DELETE não adicionava o body ao request. Esta foi a única maneira que encontrei de resolver este problema.
 //https://stackoverflow.com/questions/33553559/delete-request-with-header-and-parametes-volley
 

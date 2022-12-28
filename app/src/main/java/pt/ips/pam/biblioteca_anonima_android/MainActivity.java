@@ -19,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DB = new DatabaseRequest(MainActivity.this);
-        /*
+
+        //exemplos do uso da classe DatabaseRequest (Pedidos CRUD à API).
         DB.getBooks(new VolleyHandler.callback() {
             @Override
             public void onSuccess(JSONArray data) throws JSONException {
@@ -30,26 +31,33 @@ public class MainActivity extends AppCompatActivity {
                     text.append(book + "\n");
                 }
             }
-        });*/
-
+        });
+        /*
         JSONObject livro = new JSONObject();
         JSONArray autores = new JSONArray();
+        JSONArray categorias = new JSONArray();
         try {
-            livro.put("Titulo", "test");
+            livro.put("Titulo", "final test");
             livro.put("ISBN", "16453138468");
             livro.put("Numero_Paginas", 543);
             livro.put("IDEditora", 2);
             livro.put("Capa", "https://google.com");
-            livro.put("IDAutores", 1);
-            livro.put("IDCategorias", 14);
+            autores.put(3);
+            autores.put(1);
+            livro.put("IDAutores", autores);
+            categorias.put(7);
+            categorias.put(5);
+            categorias.put(18);
+            categorias.put(10);
+            livro.put("IDCategorias", categorias);
         }
         catch (JSONException e) {
             Log.d("volleyError", e.toString());
         }
-
+        Log.d("volleyError", livro.toString());
         DB.create(DatabaseTables.LIVRO, livro);
-        //DB.edit(DatabaseTables.EDITORA, 5, livro);
-
+        //DB.edit(DatabaseTables.LIVRO, 8, livro);
         //DB.delete(DatabaseTables.LIVRO, 8);
+        */
     }
 }

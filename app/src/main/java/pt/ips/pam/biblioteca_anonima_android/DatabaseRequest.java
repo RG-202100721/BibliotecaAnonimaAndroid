@@ -1,3 +1,5 @@
+//processamento dos pedidos CRUD para a API utilizando Volley e ProgressDialog para indicação do progresso.
+
 package pt.ips.pam.biblioteca_anonima_android;
 
 import android.app.ProgressDialog;
@@ -30,7 +32,6 @@ public class DatabaseRequest {
     }
 
     private static final String Host = "https://biblioteca-anonima.onrender.com";
-    
     private String URL = "";
     private JsonObjectRequest request;
 
@@ -90,7 +91,7 @@ public class DatabaseRequest {
             }
         }
         else {
-            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.", Toast.LENGTH_LONG).show();
+            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -126,7 +127,7 @@ public class DatabaseRequest {
             }
         }
         else {
-            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.", Toast.LENGTH_LONG).show();
+            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
         }
     }
 
