@@ -7,6 +7,9 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -35,10 +38,10 @@ public class DatabaseRequest {
     private String URL = "";
     private JsonObjectRequest request;
 
-    public void getBooks(VolleyHandler.callback callback) {
-        URL = Host + "/getBooks";
+    public void getData(String route, @NonNull VolleyHandler.callback callback) {
+        URL = Host + route;
 
-        progDialog.setMessage("Obtendo os livros da biblioteca...");
+        progDialog.setMessage("Obtendo os registos da biblioteca...");
         progDialog.setProgress(0);
         progDialog.show();
 
@@ -54,13 +57,13 @@ public class DatabaseRequest {
                         progDialog.dismiss();
                     }
                 }),
-                onError("Não foi possível obter os livros.")
+                onError("Não foi possível obter os registos.")
         );
         progDialog.setProgress(25);
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
-    public void create(DatabaseTables table, JSONObject newData) {
+    public void create(DatabaseTables table, JSONObject newData, @Nullable VolleyHandler.normalCallback callback) {
         URL = Host + "/create";
 
         if (table.checkJSON(table, newData)) {
@@ -72,8 +75,13 @@ public class DatabaseRequest {
                 newData.put("Tabela", String.valueOf(table));
 
                 request = new JsonObjectRequest(Request.Method.POST, URL, newData,
-                        onNormalResponse("O registo foi criado."),
-                        onError("Não foi possível criar o livro.")
+                        onNormalResponse("O registo foi criado.", new VolleyHandler.normalCallback() {
+                            @Override
+                            public void onSuccess() {
+                                if (callback != null) callback.onSuccess();
+                            }
+                        }),
+                        onError("Não foi possível criar o registo.")
                 ) {
                     @Override
                     public Map<String, String> getHeaders() {
@@ -95,7 +103,7 @@ public class DatabaseRequest {
         }
     }
 
-    public void edit(DatabaseTables table, int rowID, JSONObject newData) {
+    public void edit(DatabaseTables table, int rowID, JSONObject newData, @Nullable VolleyHandler.normalCallback callback) {
         URL = Host + "/edit";
 
         if (table.checkJSON(table, newData)) {
@@ -108,7 +116,12 @@ public class DatabaseRequest {
                 newData.put("ID", String.valueOf(rowID));
 
                 request = new JsonObjectRequest(Request.Method.PUT, URL, newData,
-                        onNormalResponse("O registo foi editado."),
+                        onNormalResponse("O registo foi editado.", new VolleyHandler.normalCallback() {
+                            @Override
+                            public void onSuccess() {
+                                if (callback != null) callback.onSuccess();
+                            }
+                        }),
                         onError("Não foi possível editar o registo.")
                 ) {
                     @Override
@@ -131,7 +144,7 @@ public class DatabaseRequest {
         }
     }
 
-    public void delete(DatabaseTables table, int rowID) {
+    public void delete(DatabaseTables table, int rowID, @Nullable VolleyHandler.normalCallback callback) {
         URL = Host + "/delete";
 
         progDialog.setMessage("Apagando o registo...");
@@ -144,7 +157,12 @@ public class DatabaseRequest {
             newData.put("ID", String.valueOf(rowID));
 
             request = new JsonObjectRequest(Request.Method.DELETE, URL, newData,
-                    onNormalResponse("O registo foi apagado."),
+                    onNormalResponse("O registo foi apagado.", new VolleyHandler.normalCallback() {
+                        @Override
+                        public void onSuccess() {
+                            if (callback != null) callback.onSuccess();
+                        }
+                    }),
                     onError("Não foi possível apagar o registo.")
             ) {
                 @Override
@@ -181,7 +199,7 @@ public class DatabaseRequest {
         };
     }
 
-    private Response.Listener<JSONObject> onNormalResponse(String text) {
+    private Response.Listener<JSONObject> onNormalResponse(String text, VolleyHandler.normalCallback callback) {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -199,6 +217,7 @@ public class DatabaseRequest {
                         Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
                     }
                     progDialog.dismiss();
+                    callback.onSuccess();
                 }
                 catch (JSONException error) {
                     Log.d("volleyError", error.toString());

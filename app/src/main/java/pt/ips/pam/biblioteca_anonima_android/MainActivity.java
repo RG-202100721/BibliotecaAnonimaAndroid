@@ -21,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
         DB = new DatabaseRequest(MainActivity.this);
 
         //exemplos de uso da classe DatabaseRequest (Pedidos CRUD à API).
-        DB.getBooks(new VolleyHandler.callback() {
+        //se quiserem fazer mais do que uma operação ao mesmo tempo, têm de fazer a 2ª no callback da 1º (para a 1ª acabar primeiro)
+
+        DB.getData("/getBooks", new VolleyHandler.callback() {
             @Override
             public void onSuccess(JSONArray data) throws JSONException {
                 TextView text = findViewById(R.id.text);
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
         /*
         JSONObject livro = new JSONObject();
         JSONArray autores = new JSONArray();
@@ -54,10 +57,16 @@ public class MainActivity extends AppCompatActivity {
         catch (JSONException e) {
             Log.d("volleyError", e.toString());
         }
-        Log.d("volleyError", livro.toString());
-        DB.create(DatabaseTables.LIVRO, livro);
-        //DB.edit(DatabaseTables.LIVRO, 8, livro);
-        //DB.delete(DatabaseTables.LIVRO, 8);
+
+        //DB.create(DatabaseTables.LIVRO, livro, null);
+        //DB.edit(DatabaseTables.LIVRO, 8, livro, null);
+        DB.delete(DatabaseTables.LIVRO, 10, new VolleyHandler.normalCallback() {
+            @Override
+            public void onSuccess() {
+                //fazer algo depois da operação
+                //ou não... é com vocês
+            }
+        });
         */
     }
 }

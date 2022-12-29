@@ -1,4 +1,4 @@
-//processamento da RequestQueue (Volley) utilizando métodos convenientes e a implementação de um callback.
+//processamento da RequestQueue (Volley) utilizando métodos convenientes e a implementação de callbacks.
 
 package pt.ips.pam.biblioteca_anonima_android;
 
@@ -25,6 +25,9 @@ public class VolleyHandler {
 
     public interface callback {
         void onSuccess(JSONArray data) throws JSONException;
+    }
+    public interface normalCallback {
+        void onSuccess();
     }
 
     public static VolleyHandler getInstance(Context context) {
