@@ -53,9 +53,9 @@ public enum DatabaseTables {
                         JSONArray categorias = data.getJSONArray("IDCategorias");
                         if (autores.length() > 0 && categorias.length() > 0) {
                             for (int i = 0; i < autores.length(); i++)
-                                if (autores.getInt(0) <= 0) throw new JSONException("DB row index 0 or below");
+                                if (autores.getInt(i) <= 0) throw new JSONException("DB row index 0 or below");
                             for (int i = 0; i < categorias.length(); i++)
-                                if (categorias.getInt(0) <= 0) throw new JSONException("DB row index 0 or below");
+                                if (categorias.getInt(i) <= 0) throw new JSONException("DB row index 0 or below");
                             pass = true;
                         }
                     }

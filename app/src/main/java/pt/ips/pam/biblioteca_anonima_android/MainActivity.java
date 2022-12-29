@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         DB = new DatabaseRequest(MainActivity.this);
 
-        //exemplos do uso da classe DatabaseRequest (Pedidos CRUD à API).
+        //exemplos de uso da classe DatabaseRequest (Pedidos CRUD à API).
         DB.getBooks(new VolleyHandler.callback() {
             @Override
             public void onSuccess(JSONArray data) throws JSONException {
