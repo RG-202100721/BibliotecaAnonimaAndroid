@@ -7,7 +7,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.volley.Request;
@@ -25,21 +24,27 @@ import java.util.Map;
 public class DatabaseRequest {
 
     private final Context currentContext;
+    private final SQLiteStorage SQLite;
     private final ProgressDialog progDialog;
+
     public DatabaseRequest(Context context) {
         currentContext = context;
+
         progDialog = new ProgressDialog(context);
         progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progDialog.setMax(100);
         progDialog.setCancelable(false);
+
+        SQLite = new SQLiteStorage();
+        checkStorage();
     }
 
     private static final String Host = "https://biblioteca-anonima.onrender.com";
     private String URL = "";
     private JsonObjectRequest request;
 
-    public void getData(String route, @NonNull VolleyHandler.callback callback) {
-        URL = Host + route;
+    public void getData(@Nullable VolleyHandler.normalCallback callback) {
+        URL = Host + "/getAll";
 
         progDialog.setMessage("Obtendo os registos da biblioteca...");
         progDialog.setProgress(0);
@@ -48,13 +53,17 @@ public class DatabaseRequest {
         request = new JsonObjectRequest(Request.Method.GET, URL, null,
                 onResponse(new VolleyHandler.callback() {
                     @Override
-                    public void onSuccess(JSONArray data) throws JSONException {
+                    public void onSuccess(JSONArray data) {
                         progDialog.setProgress(75);
                         progDialog.setMessage("Atualizando o interface...");
-                        //copy to local database (SQLite)
-                        callback.onSuccess(data);
-                        progDialog.setProgress(100);
-                        progDialog.dismiss();
+                        SQLite.copyToLocalDB(data, new VolleyHandler.normalCallback() {
+                            @Override
+                            public void onSuccess() {
+                                if (callback != null) callback.onSuccess();
+                                progDialog.setProgress(100);
+                                progDialog.dismiss();
+                            }
+                        });
                     }
                 }),
                 onError("Não foi possível obter os registos.")
@@ -78,6 +87,7 @@ public class DatabaseRequest {
                         onNormalResponse("O registo foi criado.", new VolleyHandler.normalCallback() {
                             @Override
                             public void onSuccess() {
+                                SQLite.addLocalDB(newData);
                                 if (callback != null) callback.onSuccess();
                             }
                         }),
@@ -119,6 +129,7 @@ public class DatabaseRequest {
                         onNormalResponse("O registo foi editado.", new VolleyHandler.normalCallback() {
                             @Override
                             public void onSuccess() {
+                                SQLite.updateLocalDB(newData);
                                 if (callback != null) callback.onSuccess();
                             }
                         }),
@@ -160,6 +171,7 @@ public class DatabaseRequest {
                     onNormalResponse("O registo foi apagado.", new VolleyHandler.normalCallback() {
                         @Override
                         public void onSuccess() {
+                            SQLite.deleteLocalDB(newData);
                             if (callback != null) callback.onSuccess();
                         }
                     }),
@@ -243,5 +255,9 @@ public class DatabaseRequest {
         Map<String,String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json; charset=UTF-8");
         return headers;
+    }
+
+    private void checkStorage() {
+        if (false) getData(null);
     }
 }

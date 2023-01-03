@@ -3,7 +3,6 @@
 package pt.ips.pam.biblioteca_anonima_android;
 
 import android.util.Log;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,25 +14,7 @@ public class Examples {
 
     public void DB_Operations() {
         //exemplos de uso da classe DatabaseRequest (Pedidos CRUD à API).
-        //se quiserem fazer mais do que uma operação ao mesmo tempo, têm de fazer a 2ª no callback da 1º (para a 1ª acabar primeiro)
-
-        DB.getData("/getBooks", new VolleyHandler.callback() {
-            @Override
-            public void onSuccess(JSONArray data) throws JSONException {
-                TextView text = findViewById(R.id.text);
-                text.setText("");
-                for (int i = 0; i < data.length(); i++){
-                    JSONObject book = data.getJSONObject(i);
-                    text.append(book + "\n");
-                }
-            }
-
-            //ignorar isto (está aqui só para não um erro e a app poder correr)
-            private TextView findViewById(int text) {
-                return new TextView(null);
-            }
-        });
-
+        //se quiserem fazer uma operação só depois da outra ter terminado, têm de fazer-la no callback da 1º
 
         JSONObject livro = new JSONObject();
         JSONArray autores = new JSONArray();
@@ -69,8 +50,22 @@ public class Examples {
     }
 
     public void SQLite_Operations() {
-        //exemplos de uso da classe ??? (Pedidos à base de dados local em SQLite).
+        //exemplos de uso da classe SQLiteStorage (Pedidos à base de dados local em SQLite).
+        //utilizem estas funções para mostrar os dados ao utilizador/admin
 
+        DatabaseRequest DB = new DatabaseRequest(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)
+        SQLiteStorage SQLite = new SQLiteStorage();
 
+        SQLite.getBooks();
+        SQLite.getBook(1);
+
+        SQLite.getAuthors();
+        SQLite.getAuthor(2);
+
+        SQLite.getCategories();
+        SQLite.getCategory(3);
+
+        SQLite.getPublishers();
+        SQLite.getPublisher(4);
     }
 }
