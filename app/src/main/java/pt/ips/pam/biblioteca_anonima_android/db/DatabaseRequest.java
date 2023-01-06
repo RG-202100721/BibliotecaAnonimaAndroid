@@ -24,7 +24,6 @@ import java.util.Map;
 public class DatabaseRequest {
 
     private final Context currentContext;
-    private final SQLiteStorage SQLite;
     private final ProgressDialog progDialog;
 
     public DatabaseRequest(Context context) {
@@ -34,16 +33,14 @@ public class DatabaseRequest {
         progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progDialog.setMax(100);
         progDialog.setCancelable(false);
-
-        SQLite = new SQLiteStorage();
-        checkStorage();
     }
 
-    private static final String Host = "https://biblioteca-anonima.onrender.com";
+    //private static final String Host = "https://biblioteca-anonima.onrender.com";
+    private static final String Host = "http://192.168.56.1:8081";
     private String URL = "";
     private JsonObjectRequest request;
 
-    public void getData(@Nullable VolleyHandler.normalCallback callback) {
+    public void getData(@Nullable VolleyHandler.callback callback) {
         URL = Host + "/getAll";
 
         progDialog.setMessage("Obtendo os registos da biblioteca...");
@@ -51,12 +48,12 @@ public class DatabaseRequest {
         progDialog.show();
 
         request = new JsonObjectRequest(Request.Method.GET, URL, null,
-                onResponse(new VolleyHandler.callback() {
+                onResponseWithData(new VolleyHandler.callbackWithData() {
                     @Override
                     public void onSuccess(JSONArray data) {
                         progDialog.setProgress(75);
-                        progDialog.setMessage("Atualizando o interface...");
-                        SQLite.copyToLocalDB(data, new VolleyHandler.normalCallback() {
+                        progDialog.setMessage("Atualizando os dados locais...");
+                        new SQLiteStorage().copyToLocalDB(data, new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
                                 if (callback != null) callback.onSuccess();
@@ -72,7 +69,7 @@ public class DatabaseRequest {
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
 
-    public void create(DatabaseTables table, JSONObject newData, @Nullable VolleyHandler.normalCallback callback) {
+    public void create(DatabaseTables table, JSONObject newData, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/create";
 
         if (table.checkJSON(table, newData)) {
@@ -84,10 +81,10 @@ public class DatabaseRequest {
                 newData.put("Tabela", String.valueOf(table));
 
                 request = new JsonObjectRequest(Request.Method.POST, URL, newData,
-                        onNormalResponse("O registo foi criado.", new VolleyHandler.normalCallback() {
+                        onResponse("O registo foi criado.", new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                SQLite.addLocalDB(newData);
+                                new SQLiteStorage().addLocalDB(newData);
                                 if (callback != null) callback.onSuccess();
                             }
                         }),
@@ -113,7 +110,7 @@ public class DatabaseRequest {
         }
     }
 
-    public void edit(DatabaseTables table, int rowID, JSONObject newData, @Nullable VolleyHandler.normalCallback callback) {
+    public void edit(DatabaseTables table, int rowID, JSONObject newData, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/edit";
 
         if (table.checkJSON(table, newData)) {
@@ -126,10 +123,10 @@ public class DatabaseRequest {
                 newData.put("ID", String.valueOf(rowID));
 
                 request = new JsonObjectRequest(Request.Method.PUT, URL, newData,
-                        onNormalResponse("O registo foi editado.", new VolleyHandler.normalCallback() {
+                        onResponse("O registo foi editado.", new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                SQLite.updateLocalDB(newData);
+                                new SQLiteStorage().updateLocalDB(newData);
                                 if (callback != null) callback.onSuccess();
                             }
                         }),
@@ -155,7 +152,7 @@ public class DatabaseRequest {
         }
     }
 
-    public void delete(DatabaseTables table, int rowID, @Nullable VolleyHandler.normalCallback callback) {
+    public void delete(DatabaseTables table, int rowID, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/delete";
 
         progDialog.setMessage("Apagando o registo...");
@@ -168,10 +165,10 @@ public class DatabaseRequest {
             newData.put("ID", String.valueOf(rowID));
 
             request = new JsonObjectRequest(Request.Method.DELETE, URL, newData,
-                    onNormalResponse("O registo foi apagado.", new VolleyHandler.normalCallback() {
+                    onResponse("O registo foi apagado.", new VolleyHandler.callback() {
                         @Override
                         public void onSuccess() {
-                            SQLite.deleteLocalDB(newData);
+                            new SQLiteStorage().deleteLocalDB(newData);
                             if (callback != null) callback.onSuccess();
                         }
                     }),
@@ -192,7 +189,7 @@ public class DatabaseRequest {
         }
     }
 
-    private Response.Listener<JSONObject> onResponse(VolleyHandler.callback callback) {
+    private Response.Listener<JSONObject> onResponseWithData(VolleyHandler.callbackWithData callback) {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -211,7 +208,7 @@ public class DatabaseRequest {
         };
     }
 
-    private Response.Listener<JSONObject> onNormalResponse(String text, VolleyHandler.normalCallback callback) {
+    private Response.Listener<JSONObject> onResponse(String text, VolleyHandler.callback callback) {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
