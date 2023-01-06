@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import pt.ips.pam.biblioteca_anonima_android.db.DatabaseRequest;
+import pt.ips.pam.biblioteca_anonima_android.db.AuthRequest;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,7 +13,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DatabaseRequest DB = new DatabaseRequest(MainActivity.this);
+        AuthRequest AR = new AuthRequest(MainActivity.this);
 
+        AR.logout(null);
     }
 }

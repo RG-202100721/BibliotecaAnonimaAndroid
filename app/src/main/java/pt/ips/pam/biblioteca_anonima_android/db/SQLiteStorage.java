@@ -1,5 +1,7 @@
 package pt.ips.pam.biblioteca_anonima_android.db;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,7 +39,7 @@ public class SQLiteStorage {
 
     }
 
-    public void copyToLocalDB(JSONArray result, VolleyHandler.normalCallback callback) {
+    public void copyToLocalDB(JSONArray result, VolleyHandler.callback callback) {
 
         callback.onSuccess();
     }
@@ -54,7 +56,12 @@ public class SQLiteStorage {
 
     }
 
-    public void reset() {
+    public void getAdmin() {
 
+    }
+
+    public void reset(@Nullable VolleyHandler.callback callback) {
+
+        if (callback != null) callback.onSuccess();
     }
 }

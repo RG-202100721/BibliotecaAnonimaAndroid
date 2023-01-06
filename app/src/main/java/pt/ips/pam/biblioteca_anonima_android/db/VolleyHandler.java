@@ -24,10 +24,10 @@ public class VolleyHandler {
     }
 
     public interface callback {
-        void onSuccess(JSONArray data) throws JSONException;
-    }
-    public interface normalCallback {
         void onSuccess();
+    }
+    public interface callbackWithData {
+        void onSuccess(JSONArray data) throws JSONException;
     }
 
     public static VolleyHandler getInstance(Context context) {

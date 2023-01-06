@@ -12,12 +12,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public enum DatabaseTables {
-    AUTOR, EDITORA, LIVRO, CATEGORIA;
+    ADMIN, AUTOR, EDITORA, LIVRO, CATEGORIA;
 
     @NonNull
     public String toString() {
         String table = "";
-        if (this == AUTOR) {
+        if (this == ADMIN) {
+            table = "Administrador";
+        } else if (this == AUTOR) {
             table = "Autor";
         } else if (this == EDITORA) {
             table = "Editora";
@@ -61,6 +63,11 @@ public enum DatabaseTables {
                             pass = true;
                         }
                     }
+                    break;
+                case ADMIN:
+                    text += "Campos JSON para fazer o login são:\nNumero_Conta [int]\nPassword [String]";
+                    if (data.length() == 2 && data.getInt("Numero_Conta") > 0 && !data.getString("Password").equals(""))
+                        pass = true;
                     break;
             }
             if (!pass) errorJSON(text, null);

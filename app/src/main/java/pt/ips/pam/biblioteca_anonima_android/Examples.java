@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pt.ips.pam.biblioteca_anonima_android.db.AuthRequest;
 import pt.ips.pam.biblioteca_anonima_android.db.DatabaseRequest;
 import pt.ips.pam.biblioteca_anonima_android.db.DatabaseTables;
 import pt.ips.pam.biblioteca_anonima_android.db.SQLiteStorage;
@@ -15,8 +16,6 @@ import pt.ips.pam.biblioteca_anonima_android.db.VolleyHandler;
 //^^^^^^^^ não se esqueçam de fazer import das classes que querem usar
 
 public class Examples {
-
-    private DatabaseRequest DB = new DatabaseRequest(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)
 
     public void DB_Operations() {
         //exemplos de uso da classe DatabaseRequest (Pedidos CRUD à API).
@@ -41,12 +40,14 @@ public class Examples {
             livro.put("IDCategorias", categorias);
         }
         catch (JSONException e) {
-            Log.d("volleyError", e.toString());
+            Log.d("JSONException", e.toString());
         }
+
+        DatabaseRequest DB = new DatabaseRequest(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)
 
         DB.create(DatabaseTables.LIVRO, livro, null);
         DB.edit(DatabaseTables.LIVRO, 8, livro, null);
-        DB.delete(DatabaseTables.LIVRO, 10, new VolleyHandler.normalCallback() {
+        DB.delete(DatabaseTables.LIVRO, 10, new VolleyHandler.callback() {
             @Override
             public void onSuccess() {
                 //fazer algo depois da operação
@@ -73,5 +74,32 @@ public class Examples {
 
         SQLite.getPublishers();
         SQLite.getPublisher(4);
+
+        SQLite.getAdmin();
+    }
+
+    public void Auth_Operations() {
+        //exemplos de uso dos métodos do script DB/authentication.js (Pedidos de autenticação à API).
+        //utilizem estas funções para entrar/sair da zona de admin
+
+        JSONObject info = new JSONObject();
+        try {
+            info.put("Numero_Conta", 123456789);
+            info.put("Password", "password123");
+        }
+        catch (JSONException e) {
+            Log.d("JSONException", e.toString());
+        }
+
+        AuthRequest AR = new AuthRequest(null);
+
+        AR.login(info, null);
+        AR.logout(new VolleyHandler.callback() {
+            @Override
+            public void onSuccess() {
+                //fazer algo depois da operação
+                //ou não... é com vocês
+            }
+        });
     }
 }
