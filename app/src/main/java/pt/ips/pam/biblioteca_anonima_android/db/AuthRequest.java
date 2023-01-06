@@ -1,26 +1,30 @@
+//processamento dos pedidos de autenticação para a API utilizando Volley e ProgressDialog para indicação do progresso.
+
 package pt.ips.pam.biblioteca_anonima_android.db;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import pt.ips.pam.biblioteca_anonima_android.MainActivity;
 
 public class AuthRequest {
 
@@ -41,6 +45,7 @@ public class AuthRequest {
     private String URL = "";
     private JsonObjectRequest request;
     private int statusCode = 0;
+    private String admin = "";
 
     public void login(JSONObject data, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/login";
@@ -54,8 +59,12 @@ public class AuthRequest {
                     onResponse("Login efetuado com sucesso.", new VolleyHandler.callback() {
                         @Override
                         public void onSuccess() {
-                            new SQLiteStorage().addLocalDB(data);
-                            if (callback != null) callback.onSuccess();
+                            new SQLiteStorage(currentContext).setAdmin(admin, new VolleyHandler.callback() {
+                                @Override
+                                public void onSuccess() {
+                                    if (callback != null) callback.onSuccess();
+                                }
+                            });
                         }
                     }),
                     onError("Não foi possível efetuar o login.")
@@ -64,23 +73,15 @@ public class AuthRequest {
                 public Map<String, String> getHeaders() {
                     return requestHeaders();
                 }
-
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    statusCode = response.statusCode;
-                    return super.parseNetworkResponse(response);
-                }
             };
 
             progDialog.setProgress(25);
             VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
         }
-        else {
-            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
-        }
+        else Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
     }
 
-    public void logout(@Nullable VolleyHandler.callback callback) {
+    public void logout() {
         URL = Host + "/logout";
 
         progDialog.setMessage("Fechando a sessão...");
@@ -93,12 +94,12 @@ public class AuthRequest {
                     public void onSuccess() {
                         progDialog.setProgress(75);
                         progDialog.setMessage("Atualizando os dados locais...");
-                        new SQLiteStorage().reset(new VolleyHandler.callback() {
+                        new SQLiteStorage(currentContext).reset(new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                if (callback != null) callback.onSuccess();
                                 progDialog.setProgress(100);
                                 progDialog.dismiss();
+                                goMain();
                             }
                         });
                     }
@@ -106,17 +107,11 @@ public class AuthRequest {
                 onError("Não foi possível efetuar o logout.")
         ) {
             @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                statusCode = response.statusCode;
-                return super.parseNetworkResponse(response);
-            }
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) { return super.parseNetworkResponse(getStatusCode(response)); }
         };
+
         progDialog.setProgress(25);
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
-    }
-
-    public void noPermission(String message) {
-
     }
 
     private Response.Listener<JSONObject> onResponse(String text, VolleyHandler.callback callback) {
@@ -132,11 +127,11 @@ public class AuthRequest {
                     }
                     else {
                         Log.d("volleyLog", response.getString("message"));
+                        if (response.has("name")) admin = response.getString("name");
                         progDialog.setMessage("Operação concluída.");
                         progDialog.setProgress(100);
                         Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
                     }
-                    progDialog.dismiss();
                     callback.onSuccess();
                 }
                 catch (JSONException error) {
@@ -152,12 +147,18 @@ public class AuthRequest {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("volleyError", error.toString());
                 if (error instanceof AuthFailureError) {
+                    Log.d("volleyError", error + " HTTP code: 401");
                     Toast.makeText(currentContext, "Não tem acesso à operação.\nNão está autenticado.", Toast.LENGTH_LONG).show();
-                    new SQLiteStorage().reset(null);
+                    new SQLiteStorage(currentContext).reset(new VolleyHandler.callback() {
+                        @Override
+                        public void onSuccess() { goMain(); }
+                    });
                 }
-                else Toast.makeText(currentContext, statusCode + text, Toast.LENGTH_LONG).show();
+                else {
+                    Log.d("volleyError", error.toString() + " HTTP code:" + statusCode);
+                    Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
+                }
                 progDialog.dismiss();
             }
         };
@@ -167,5 +168,15 @@ public class AuthRequest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json; charset=UTF-8");
         return headers;
+    }
+
+    private NetworkResponse getStatusCode(NetworkResponse response) {
+        statusCode = response.statusCode;
+        return response;
+    }
+
+    private void goMain() {
+        Intent goToStart = new Intent(currentContext, MainActivity.class);
+        ContextCompat.startActivity(currentContext, goToStart, null);
     }
 }

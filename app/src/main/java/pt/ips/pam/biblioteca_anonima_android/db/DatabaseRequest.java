@@ -4,11 +4,15 @@ package pt.ips.pam.biblioteca_anonima_android.db;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -20,6 +24,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import pt.ips.pam.biblioteca_anonima_android.MainActivity;
 
 public class DatabaseRequest {
 
@@ -39,6 +45,7 @@ public class DatabaseRequest {
     private static final String Host = "http://192.168.56.1:8081";
     private String URL = "";
     private JsonObjectRequest request;
+    private int statusCode = 0;
 
     public void getData(@Nullable VolleyHandler.callback callback) {
         URL = Host + "/getAll";
@@ -53,10 +60,11 @@ public class DatabaseRequest {
                     public void onSuccess(JSONArray data) {
                         progDialog.setProgress(75);
                         progDialog.setMessage("Atualizando os dados locais...");
-                        new SQLiteStorage().copyToLocalDB(data, new VolleyHandler.callback() {
+                        new SQLiteStorage(currentContext).copyToLocalDB(data, new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
                                 if (callback != null) callback.onSuccess();
+                                progDialog.setMessage("Operação concluída.");
                                 progDialog.setProgress(100);
                                 progDialog.dismiss();
                             }
@@ -65,6 +73,7 @@ public class DatabaseRequest {
                 }),
                 onError("Não foi possível obter os registos.")
         );
+
         progDialog.setProgress(25);
         VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
     }
@@ -84,8 +93,12 @@ public class DatabaseRequest {
                         onResponse("O registo foi criado.", new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                new SQLiteStorage().addLocalDB(newData);
-                                if (callback != null) callback.onSuccess();
+                                new SQLiteStorage(currentContext).addLocalDB(newData, new VolleyHandler.callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        if (callback != null) callback.onSuccess();
+                                    }
+                                });
                             }
                         }),
                         onError("Não foi possível criar o registo.")
@@ -94,6 +107,9 @@ public class DatabaseRequest {
                     public Map<String, String> getHeaders() {
                         return requestHeaders();
                     }
+
+                    @Override
+                    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) { return super.parseNetworkResponse(getStatusCode(response)); }
                 };
 
                 progDialog.setProgress(25);
@@ -105,9 +121,7 @@ public class DatabaseRequest {
                 progDialog.dismiss();
             }
         }
-        else {
-            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
-        }
+        else Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
     }
 
     public void edit(DatabaseTables table, int rowID, JSONObject newData, @Nullable VolleyHandler.callback callback) {
@@ -126,8 +140,12 @@ public class DatabaseRequest {
                         onResponse("O registo foi editado.", new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                new SQLiteStorage().updateLocalDB(newData);
-                                if (callback != null) callback.onSuccess();
+                                new SQLiteStorage(currentContext).updateLocalDB(newData, new VolleyHandler.callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        if (callback != null) callback.onSuccess();
+                                    }
+                                });
                             }
                         }),
                         onError("Não foi possível editar o registo.")
@@ -136,6 +154,9 @@ public class DatabaseRequest {
                     public Map<String, String> getHeaders() {
                         return requestHeaders();
                     }
+
+                    @Override
+                    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) { return super.parseNetworkResponse(getStatusCode(response)); }
                 };
 
                 progDialog.setProgress(25);
@@ -147,9 +168,7 @@ public class DatabaseRequest {
                 progDialog.dismiss();
             }
         }
-        else {
-            Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
-        }
+        else Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
     }
 
     public void delete(DatabaseTables table, int rowID, @Nullable VolleyHandler.callback callback) {
@@ -168,17 +187,23 @@ public class DatabaseRequest {
                     onResponse("O registo foi apagado.", new VolleyHandler.callback() {
                         @Override
                         public void onSuccess() {
-                            new SQLiteStorage().deleteLocalDB(newData);
-                            if (callback != null) callback.onSuccess();
+                            new SQLiteStorage(currentContext).deleteLocalDB(newData, new VolleyHandler.callback() {
+                                @Override
+                                public void onSuccess() {
+                                    if (callback != null) callback.onSuccess();
+                                }
+                            });
                         }
                     }),
                     onError("Não foi possível apagar o registo.")
             ) {
                 @Override
-                public Map<String, String> getHeaders() {
-                    return requestHeaders();
-                }
+                public Map<String, String> getHeaders() { return requestHeaders(); }
+
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) { return super.parseNetworkResponse(getStatusCode(response)); }
             };
+
             progDialog.setProgress(25);
             VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
         }
@@ -241,8 +266,18 @@ public class DatabaseRequest {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("volleyError", error.toString());
-                Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
+                if (error instanceof AuthFailureError) {
+                    Log.d("volleyError", error + " HTTP code: 401");
+                    Toast.makeText(currentContext, "Não tem acesso à operação.\nNão está autenticado.", Toast.LENGTH_LONG).show();
+                    new SQLiteStorage(currentContext).reset(new VolleyHandler.callback() {
+                        @Override
+                        public void onSuccess() { goMain(); }
+                    });
+                }
+                else {
+                    Log.d("volleyError", error.toString() + " HTTP code:" + statusCode);
+                    Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
+                }
                 progDialog.dismiss();
             }
         };
@@ -254,7 +289,13 @@ public class DatabaseRequest {
         return headers;
     }
 
-    private void checkStorage() {
-        if (false) getData(null);
+    private NetworkResponse getStatusCode(NetworkResponse response) {
+        statusCode = response.statusCode;
+        return response;
+    }
+
+    private void goMain() {
+        Intent goToStart = new Intent(currentContext, MainActivity.class);
+        ContextCompat.startActivity(currentContext, goToStart, null);
     }
 }

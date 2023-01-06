@@ -60,8 +60,7 @@ public class Examples {
         //exemplos de uso da classe SQLiteStorage (Pedidos à base de dados local em SQLite).
         //utilizem estas funções para mostrar os dados ao utilizador/admin
 
-        DatabaseRequest DB = new DatabaseRequest(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)
-        SQLiteStorage SQLite = new SQLiteStorage();
+        SQLiteStorage SQLite = new SQLiteStorage(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)
 
         SQLite.getBooks();
         SQLite.getBook(1);
@@ -93,13 +92,13 @@ public class Examples {
 
         AuthRequest AR = new AuthRequest(null);
 
-        AR.login(info, null);
-        AR.logout(new VolleyHandler.callback() {
+        AR.login(info, new VolleyHandler.callback() {
             @Override
             public void onSuccess() {
                 //fazer algo depois da operação
                 //ou não... é com vocês
             }
         });
+        AR.logout();
     }
 }
