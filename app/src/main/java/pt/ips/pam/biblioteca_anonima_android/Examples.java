@@ -8,6 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pt.ips.pam.biblioteca_anonima_android.db.DatabaseRequest;
+import pt.ips.pam.biblioteca_anonima_android.db.DatabaseTables;
+import pt.ips.pam.biblioteca_anonima_android.db.SQLiteStorage;
+import pt.ips.pam.biblioteca_anonima_android.db.VolleyHandler;
+//^^^^^^^^ não se esqueçam de fazer import das classes que querem usar
+
 public class Examples {
 
     private DatabaseRequest DB = new DatabaseRequest(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)

@@ -1,6 +1,6 @@
 //processamento dos pedidos CRUD para a API utilizando Volley e ProgressDialog para indicação do progresso.
 
-package pt.ips.pam.biblioteca_anonima_android;
+package pt.ips.pam.biblioteca_anonima_android.db;
 
 import android.app.ProgressDialog;
 import android.content.Context;

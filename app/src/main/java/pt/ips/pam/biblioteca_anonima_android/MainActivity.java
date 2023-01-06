@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import pt.ips.pam.biblioteca_anonima_android.db.DatabaseRequest;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override

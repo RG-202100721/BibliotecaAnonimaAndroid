@@ -1,4 +1,4 @@
-package pt.ips.pam.biblioteca_anonima_android;
+package pt.ips.pam.biblioteca_anonima_android.db;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

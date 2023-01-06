@@ -2,7 +2,7 @@
 //O método DELETE não adicionava o body ao request. Esta foi a única maneira que encontrei de resolver este problema.
 //https://stackoverflow.com/questions/33553559/delete-request-with-header-and-parametes-volley
 
-package pt.ips.pam.biblioteca_anonima_android;
+package pt.ips.pam.biblioteca_anonima_android.db;
 
 import androidx.annotation.VisibleForTesting;
 import com.android.volley.AuthFailureError;

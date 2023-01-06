@@ -1,6 +1,6 @@
 //enumeração das tabelas da base de dados e verificação do JSON a ser enviado para a API.
 
-package pt.ips.pam.biblioteca_anonima_android;
+package pt.ips.pam.biblioteca_anonima_android.db;
 
 import android.util.Log;
 
