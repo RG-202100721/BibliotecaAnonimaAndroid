@@ -42,10 +42,15 @@ public enum DatabaseTables {
                     break;
 
                 case AUTOR:
-                case EDITORA:
-                    text += "Campos JSON para a tabela \"Autor\" e \"Editora\" são:\nNome [String]\nPais [String]";
+                    text += "Campos JSON para a tabela \"Autor\" são:\nNome [String]\nPais [String]";
                     if (data.length() == 2 && !data.getString("Nome").equals("") && !data.getString("Pais").equals(""))
                         pass = true;
+                    break;
+
+                case EDITORA:
+                    text += "Campos JSON para a tabela \"Editora\" são:\nNome [String]\nPais [String]\nLogo [String]";
+                    if (data.length() == 3 && !data.getString("Nome").equals("") && !data.getString("Pais").equals("")
+                            && !data.getString("Logo").equals("")) pass = true;
                     break;
 
                 case LIVRO:

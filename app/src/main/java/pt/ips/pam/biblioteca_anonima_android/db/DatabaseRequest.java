@@ -186,7 +186,7 @@ public class DatabaseRequest {
                     onResponse("O registo foi apagado.", new VolleyHandler.callback() {
                         @Override
                         public void onSuccess() {
-                            new SQLiteStorage(currentContext).deleteLocalDB(table, newData, new VolleyHandler.callback() {
+                            new SQLiteStorage(currentContext).deleteLocalDB(table, rowID, new VolleyHandler.callback() {
                                 @Override
                                 public void onSuccess() {
                                     if (callback != null) callback.onSuccess();
