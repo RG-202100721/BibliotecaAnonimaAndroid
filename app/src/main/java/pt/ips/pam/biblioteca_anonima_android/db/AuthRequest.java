@@ -21,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +122,7 @@ public class AuthRequest {
                 try {
                     progDialog.setMessage("Autenticando o administrador...");
                     progDialog.setProgress(50);
-                    if (response.getString("message").equals("0 results.")) {
+                    if (statusCode != 200) {
                         Log.d("volleyLog", "0 results.");
                         Toast.makeText(currentContext, "Algo correu mal durante a operação.", Toast.LENGTH_LONG).show();
                     }
@@ -148,15 +149,23 @@ public class AuthRequest {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof AuthFailureError) {
-                    Log.d("volleyError", error + " HTTP code: 401");
+                    Log.d("volleyError", error + " HTTP Code: 401");
                     Toast.makeText(currentContext, "Não tem acesso à operação.\nNão está autenticado.", Toast.LENGTH_LONG).show();
                     new SQLiteStorage(currentContext).reset(new VolleyHandler.callback() {
                         @Override
                         public void onSuccess() { goMain(); }
                     });
                 }
+                else if (error.networkResponse.statusCode == 400) {
+                    Log.d("volleyError", error + " HTTP Code: 400");
+                    try {
+                        String message = new JSONObject(new String(error.networkResponse.data, StandardCharsets.UTF_8)).getString("message");
+                        Toast.makeText(currentContext, message, Toast.LENGTH_LONG).show();
+                    }
+                    catch (JSONException e) { Log.d("JSONException", e.toString()); }
+                }
                 else {
-                    Log.d("volleyError", error.toString() + " HTTP code:" + statusCode);
+                    Log.d("volleyError", error + " HTTP Code:" + statusCode);
                     Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
                 }
                 progDialog.dismiss();

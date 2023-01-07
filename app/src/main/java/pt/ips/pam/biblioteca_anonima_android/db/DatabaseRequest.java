@@ -47,7 +47,7 @@ public class DatabaseRequest {
     private JsonObjectRequest request;
     private int statusCode = 0;
 
-    public void getData(@Nullable VolleyHandler.callback callback) {
+    protected void getData() {
         URL = Host + "/getAll";
 
         progDialog.setMessage("Obtendo os registos da biblioteca...");
@@ -63,7 +63,6 @@ public class DatabaseRequest {
                         new SQLiteStorage(currentContext).copyToLocalDB(data, new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                if (callback != null) callback.onSuccess();
                                 progDialog.setMessage("Operação concluída.");
                                 progDialog.setProgress(100);
                                 progDialog.dismiss();
@@ -93,7 +92,7 @@ public class DatabaseRequest {
                         onResponse("O registo foi criado.", new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                new SQLiteStorage(currentContext).addLocalDB(newData, new VolleyHandler.callback() {
+                                new SQLiteStorage(currentContext).addLocalDB(table, newData, new VolleyHandler.callback() {
                                     @Override
                                     public void onSuccess() {
                                         if (callback != null) callback.onSuccess();
@@ -140,7 +139,7 @@ public class DatabaseRequest {
                         onResponse("O registo foi editado.", new VolleyHandler.callback() {
                             @Override
                             public void onSuccess() {
-                                new SQLiteStorage(currentContext).updateLocalDB(newData, new VolleyHandler.callback() {
+                                new SQLiteStorage(currentContext).updateLocalDB(table, newData, new VolleyHandler.callback() {
                                     @Override
                                     public void onSuccess() {
                                         if (callback != null) callback.onSuccess();
@@ -187,7 +186,7 @@ public class DatabaseRequest {
                     onResponse("O registo foi apagado.", new VolleyHandler.callback() {
                         @Override
                         public void onSuccess() {
-                            new SQLiteStorage(currentContext).deleteLocalDB(newData, new VolleyHandler.callback() {
+                            new SQLiteStorage(currentContext).deleteLocalDB(table, newData, new VolleyHandler.callback() {
                                 @Override
                                 public void onSuccess() {
                                     if (callback != null) callback.onSuccess();
@@ -240,7 +239,7 @@ public class DatabaseRequest {
                 try {
                     progDialog.setMessage("Obtendo resposta do servidor...");
                     progDialog.setProgress(50);
-                    if (response.getString("message").equals("0 results.")) {
+                    if (statusCode != 200) {
                         Log.d("volleyLog", "0 results.");
                         Toast.makeText(currentContext, "Algo correu mal durante a operação.", Toast.LENGTH_LONG).show();
                     }

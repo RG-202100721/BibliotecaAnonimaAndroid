@@ -59,6 +59,7 @@ public class Examples {
     public void SQLite_Operations() {
         //exemplos de uso da classe SQLiteStorage (Pedidos à base de dados local em SQLite).
         //utilizem estas funções para mostrar os dados ao utilizador/admin
+        //estas funções retornam um JSONObject ou um JSONArray dependendo da quantidade de dados
 
         SQLiteStorage SQLite = new SQLiteStorage(null); //<-- contexto da atividade em que está a ser usado (null porque isto é só um exemplo)
 
@@ -74,7 +75,7 @@ public class Examples {
         SQLite.getPublishers();
         SQLite.getPublisher(4);
 
-        SQLite.getAdmin();
+        SQLite.getAdmin(); //retorna o nome do admin em string normal ou null se não houver
     }
 
     public void Auth_Operations() {
