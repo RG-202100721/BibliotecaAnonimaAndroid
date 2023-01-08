@@ -22,6 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,10 +42,11 @@ public class DatabaseRequest {
         progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progDialog.setMax(100);
         progDialog.setCancelable(false);
+
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
     }
 
-    //private static final String Host = "https://biblioteca-anonima.onrender.com";
-    private static final String Host = "http://192.168.56.1:8081";
+    private static final String Host = "https://biblioteca-anonima.onrender.com";
     private String URL = "";
     private JsonObjectRequest request;
     private int statusCode = 0;
@@ -80,7 +84,7 @@ public class DatabaseRequest {
     public void create(DatabaseTables table, JSONObject newData, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/create";
 
-        if (table.checkJSON(table, newData)) {
+        if (table.checkJSON(table, newData, currentContext)) {
             progDialog.setMessage("Criando um novo registo...");
             progDialog.setProgress(0);
             progDialog.show();
@@ -120,13 +124,13 @@ public class DatabaseRequest {
                 progDialog.dismiss();
             }
         }
-        else Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
+        else Toast.makeText(currentContext, "Operação cancelada.\nDados são inválidos.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
     }
 
     public void edit(DatabaseTables table, int rowID, JSONObject newData, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/edit";
 
-        if (table.checkJSON(table, newData)) {
+        if (table.checkJSON(table, newData, currentContext)) {
             progDialog.setMessage("Editando o registo...");
             progDialog.setProgress(0);
             progDialog.show();
@@ -167,7 +171,7 @@ public class DatabaseRequest {
                 progDialog.dismiss();
             }
         }
-        else Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
+        else Toast.makeText(currentContext, "Operação cancelada.\nDados são inválidos.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
     }
 
     public void delete(DatabaseTables table, int rowID, @Nullable VolleyHandler.callback callback) {
@@ -239,16 +243,18 @@ public class DatabaseRequest {
                 try {
                     progDialog.setMessage("Obtendo resposta do servidor...");
                     progDialog.setProgress(50);
-                    if (statusCode != 200) {
-                        Log.d("volleyLog", "0 results.");
+                    if (statusCode != 200 && statusCode != 304) {
+                        Log.d("volleyLogDatabase", String.valueOf(statusCode));
+                        Log.d("volleyLogDatabase", "Algo correu mal durante a operação.");
                         Toast.makeText(currentContext, "Algo correu mal durante a operação.", Toast.LENGTH_LONG).show();
                     }
                     else {
-                        Log.d("volleyLog", response.getString("message"));
+                        Log.d("volleyLogDatabase", response.getString("message"));
                         progDialog.setMessage("Operação concluída.");
                         progDialog.setProgress(100);
                         Toast.makeText(currentContext, text, Toast.LENGTH_LONG).show();
                     }
+                    progDialog.dismiss();
                     progDialog.dismiss();
                     callback.onSuccess();
                 }

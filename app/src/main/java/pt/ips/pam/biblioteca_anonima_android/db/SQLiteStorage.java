@@ -23,12 +23,13 @@ public class SQLiteStorage {
 
     private final Context currentContext;
     private final SharedPreferences sPref;
-    private final SQLiteDatabase LocalDB;
+    private SQLiteDatabase LocalDB;
 
     public SQLiteStorage(Context context) {
         currentContext = context;
         sPref = context.getSharedPreferences("pref_PAM", Context.MODE_PRIVATE);
         LocalDB = SQLiteDatabase.openOrCreateDatabase(context.getDatabasePath("SQLite_PAM").toString(), null, null);
+        LocalDB.close();
     }
 
     private Cursor SQLResult;
@@ -37,12 +38,14 @@ public class SQLiteStorage {
 
     public JSONArray getBooks() throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Livro")) {
                 Cursor book = SQLResult;
                 if (checkCursor("SELECT * FROM Livro_Autor")) {
                     Cursor book_authors = SQLResult;
                     if (checkCursor("SELECT * FROM Livro_Categoria")) {
                         Cursor book_categories = SQLResult;
+                        LocalDB.close();
 
                         JSONArray publishers = this.getPublishers();
                         JSONArray aut = this.getAuthors();
@@ -110,11 +113,11 @@ public class SQLiteStorage {
                         SQLResult.close();
                         return array;
                     }
-                    else return null;
+                    else { LocalDB.close(); return null; }
                 }
-                else return null;
+                else { LocalDB.close(); return null; }
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -124,12 +127,14 @@ public class SQLiteStorage {
     }
     public JSONObject getBook(int index) throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Livro WHERE ID = " + index)) {
                 Cursor book = SQLResult;
                 if (checkCursor("SELECT * FROM Livro_Autor WHERE IDLivro = " + index)) {
                     Cursor book_authors = SQLResult;
                     if (checkCursor("SELECT * FROM Livro_Categoria WHERE IDLivro = " + index)) {
                         Cursor book_categories = SQLResult;
+                        LocalDB.close();
 
                         JSONObject publisher = new JSONObject();
                         publisher.put("ID", book.getInt(4));
@@ -188,11 +193,11 @@ public class SQLiteStorage {
                         SQLResult.close();
                         return object;
                     }
-                    else return null;
+                    else { LocalDB.close(); return null; }
                 }
-                else return null;
+                else { LocalDB.close(); return null; }
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -203,7 +208,9 @@ public class SQLiteStorage {
 
     public JSONArray getAuthors() throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Autor")) {
+                LocalDB.close();
                 array = new JSONArray();
                 do {
                     object = new JSONObject();
@@ -217,7 +224,7 @@ public class SQLiteStorage {
                 SQLResult.close();
                 return array;
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -227,7 +234,9 @@ public class SQLiteStorage {
     }
     public JSONObject getAuthor(int index) throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Autor WHERE ID = " + index)) {
+                LocalDB.close();
                 object = new JSONObject();
                 object.put("ID", SQLResult.getInt(0));
                 object.put("Nome", SQLResult.getString(1));
@@ -235,7 +244,7 @@ public class SQLiteStorage {
                 SQLResult.close();
                 return object;
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -246,7 +255,9 @@ public class SQLiteStorage {
 
     public JSONArray getCategories() throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Categoria")) {
+                LocalDB.close();
                 array = new JSONArray();
                 do {
                     object = new JSONObject();
@@ -259,7 +270,7 @@ public class SQLiteStorage {
                 SQLResult.close();
                 return array;
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -269,14 +280,16 @@ public class SQLiteStorage {
     }
     public JSONObject getCategory(int index) throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Categoria WHERE ID = " + index)) {
+                LocalDB.close();
                 object = new JSONObject();
                 object.put("ID", SQLResult.getInt(0));
                 object.put("Nome", SQLResult.getString(1));
                 SQLResult.close();
                 return object;
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -287,7 +300,9 @@ public class SQLiteStorage {
 
     public JSONArray getPublishers() throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Editora")) {
+                LocalDB.close();
                 array = new JSONArray();
                 do {
                     object = new JSONObject();
@@ -302,7 +317,7 @@ public class SQLiteStorage {
                 SQLResult.close();
                 return array;
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -312,7 +327,9 @@ public class SQLiteStorage {
     }
     public JSONObject getPublisher(int index) throws NullPointerException {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT * FROM Editora WHERE ID = " + index)) {
+                LocalDB.close();
                 object = new JSONObject();
                 object.put("ID", SQLResult.getInt(0));
                 object.put("Nome", SQLResult.getString(1));
@@ -321,7 +338,7 @@ public class SQLiteStorage {
                 SQLResult.close();
                 return object;
             }
-            else return null;
+            else { LocalDB.close(); return null; }
         }
         catch (JSONException error) {
             Log.d("JSONException", error.toString());
@@ -342,6 +359,7 @@ public class SQLiteStorage {
     }
 
     protected void copyToLocalDB(JSONArray result, VolleyHandler.callback callback) {
+        LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
         try {
             LocalDB.execSQL("DROP TABLE IF EXISTS Autor");
             LocalDB.execSQL("CREATE TABLE IF NOT EXISTS Autor (ID int NOT NULL, Nome varchar(255) NOT NULL UNIQUE, Pais varchar(255) NOT NULL, PRIMARY KEY (ID))");
@@ -436,6 +454,7 @@ public class SQLiteStorage {
                 else values = new ContentValues();
             }
 
+            LocalDB.close();
             callback.onSuccess();
         }
         catch (JSONException error) {
@@ -447,6 +466,7 @@ public class SQLiteStorage {
 
     protected void addLocalDB(DatabaseTables table, JSONObject data, VolleyHandler.callback callback) {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             if (checkCursor("SELECT ID FROM " + table.toString() + " ORDER BY ID ASC")) {
                 int rowId;
                 for (rowId = 1; rowId - 1 < SQLResult.getCount(); rowId++) {
@@ -459,12 +479,18 @@ public class SQLiteStorage {
                 switch (table) {
                     case CATEGORIA:
                         sql += "(" + rowId + ", '" + data.getString("Nome") + "')";
+                        try { LocalDB.execSQL(sql); }
+                        catch (SQLiteException e) { throw new Exception("Failed to insert into local DB."); }
                         break;
                     case AUTOR:
                         sql += "(" + rowId + ", '" + data.getString("Nome") + "', '" + data.getString("Pais") + "')";
+                        try { LocalDB.execSQL(sql); }
+                        catch (SQLiteException e) { throw new Exception("Failed to insert into local DB."); }
                         break;
                     case EDITORA:
                         sql += "(" + rowId + ", '" + data.getString("Nome") + "', '" + data.getString("Pais") + "', '" + data.getString("Logo") + "')";
+                        try { LocalDB.execSQL(sql); }
+                        catch (SQLiteException e) { throw new Exception(e + " Failed to insert into local DB."); }
                         break;
                     case LIVRO:
                         sql += "(" + rowId + ", '" + data.getString("Titulo") + "', '" + data.getString("ISBN") + "', " + data.getString("Numero_Paginas") + ", " + data.getString("IDEditora") + ", '" + data.getString("Capa") + "')";
@@ -493,8 +519,7 @@ public class SQLiteStorage {
                         catch (SQLiteException e) { throw new Exception("Failed to insert into local DB."); }
                         break;
                 }
-                try { LocalDB.execSQL(sql); }
-                catch (SQLiteException e) { throw new Exception("Failed to insert into local DB."); }
+                LocalDB.close();
                 callback.onSuccess();
             }
             else throw new Exception("Failed to select from local DB.");
@@ -511,6 +536,7 @@ public class SQLiteStorage {
 
     protected void updateLocalDB(DatabaseTables table, JSONObject data, VolleyHandler.callback callback) {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             int result;
             ContentValues values = new ContentValues();
             switch (table) {
@@ -561,6 +587,7 @@ public class SQLiteStorage {
                     break;
             }
             result = LocalDB.update(table.toString(), values, "ID = " + data.getInt("ID"), null);
+            LocalDB.close();
             if (result == 1) callback.onSuccess();
             else throw new Exception("Failed to update row in local DB.");
         }
@@ -576,8 +603,10 @@ public class SQLiteStorage {
 
     protected void deleteLocalDB(DatabaseTables table, int rowId, VolleyHandler.callback callback) {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             int result = LocalDB.delete(table.toString(), "ID = " + rowId, null);
-            if (result == 1) callback.onSuccess();
+            LocalDB.close();
+            if (result == 1 || result == 0) callback.onSuccess();
             else throw new Exception("Failed to delete row in local DB.");
         }
         catch (Exception error) {
@@ -600,7 +629,7 @@ public class SQLiteStorage {
     }
 
     public void reset(@Nullable VolleyHandler.callback callback) {
-        LocalDB.close();
+        if (LocalDB.isOpen()) LocalDB.close();
         currentContext.deleteDatabase("SQLite_PAM");
         sPref.edit().clear().apply();
         if (callback != null) callback.onSuccess();
@@ -613,12 +642,14 @@ public class SQLiteStorage {
 
     public void checkLocalDB() {
         try {
+            LocalDB = SQLiteDatabase.openDatabase(currentContext.getDatabasePath("SQLite_PAM").toString(), null, SQLiteDatabase.OPEN_READWRITE);
             SQLResult = LocalDB.rawQuery("SELECT ID FROM Livro", null);
             if (!SQLResult.moveToFirst()) {
                 SQLResult.close();
+                LocalDB.close();
                 new DatabaseRequest(currentContext).getData();
             }
         }
-        catch (SQLiteException e) { new DatabaseRequest(currentContext).getData(); }
+        catch (SQLiteException e) { LocalDB.close(); new DatabaseRequest(currentContext).getData(); }
     }
 }

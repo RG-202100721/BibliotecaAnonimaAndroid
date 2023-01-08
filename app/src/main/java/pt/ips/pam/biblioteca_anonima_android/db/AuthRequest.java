@@ -21,6 +21,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +42,11 @@ public class AuthRequest {
         progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progDialog.setMax(100);
         progDialog.setCancelable(false);
+
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
     }
 
-    //private static final String Host = "https://biblioteca-anonima.onrender.com";
-    private static final String Host = "http://192.168.56.1:8081";
+    private static final String Host = "https://biblioteca-anonima.onrender.com";
     private String URL = "";
     private JsonObjectRequest request;
     private int statusCode = 0;
@@ -51,7 +55,7 @@ public class AuthRequest {
     public void login(JSONObject data, @Nullable VolleyHandler.callback callback) {
         URL = Host + "/login";
 
-        if (DatabaseTables.ADMIN.checkJSON(DatabaseTables.ADMIN, data)) {
+        if (DatabaseTables.ADMIN.checkJSON(DatabaseTables.ADMIN, data, currentContext)) {
             progDialog.setMessage("Criando uma nova sessão...");
             progDialog.setProgress(0);
             progDialog.show();
@@ -63,6 +67,7 @@ public class AuthRequest {
                             new SQLiteStorage(currentContext).setAdmin(admin, new VolleyHandler.callback() {
                                 @Override
                                 public void onSuccess() {
+                                    progDialog.dismiss();
                                     if (callback != null) callback.onSuccess();
                                 }
                             });
@@ -74,12 +79,15 @@ public class AuthRequest {
                 public Map<String, String> getHeaders() {
                     return requestHeaders();
                 }
+
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) { return super.parseNetworkResponse(getStatusCode(response)); }
             };
 
             progDialog.setProgress(25);
             VolleyHandler.getInstance(currentContext).addToRequestQueue(request);
         }
-        else Toast.makeText(currentContext, "Operação cancelada.\nJSON está errado.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
+        else Toast.makeText(currentContext, "Operação cancelada.\nDados são inválidos.\nLogcat para detalhes.", Toast.LENGTH_LONG).show();
     }
 
     public void logout() {
@@ -122,12 +130,13 @@ public class AuthRequest {
                 try {
                     progDialog.setMessage("Autenticando o administrador...");
                     progDialog.setProgress(50);
-                    if (statusCode != 200) {
-                        Log.d("volleyLog", "0 results.");
+                    if (statusCode != 200 && statusCode != 304) {
+                        Log.d("volleyLogAuth", String.valueOf(statusCode));
+                        Log.d("volleyLogAuth", "Algo correu mal durante a operação.");
                         Toast.makeText(currentContext, "Algo correu mal durante a operação.", Toast.LENGTH_LONG).show();
                     }
                     else {
-                        Log.d("volleyLog", response.getString("message"));
+                        Log.d("volleyLogAuth", response.getString("message"));
                         if (response.has("name")) admin = response.getString("name");
                         progDialog.setMessage("Operação concluída.");
                         progDialog.setProgress(100);
