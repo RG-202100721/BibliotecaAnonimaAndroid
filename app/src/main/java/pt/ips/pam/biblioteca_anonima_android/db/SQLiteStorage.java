@@ -38,17 +38,81 @@ public class SQLiteStorage {
     public JSONArray getBooks() throws NullPointerException {
         try {
             if (checkCursor("SELECT * FROM Livro")) {
-                array = new JSONArray();
-                do {
-                    object = new JSONObject();
-                    object.put("", SQLResult.getInt(0));
+                Cursor book = SQLResult;
+                if (checkCursor("SELECT * FROM Livro_Autor")) {
+                    Cursor book_authors = SQLResult;
+                    if (checkCursor("SELECT * FROM Livro_Categoria")) {
+                        Cursor book_categories = SQLResult;
 
-                    array.put(object);
-                    SQLResult.moveToNext();
+                        JSONArray publishers = this.getPublishers();
+                        JSONArray aut = this.getAuthors();
+                        JSONArray cat = this.getCategories();
+                        array = new JSONArray();
+                        do {
+                            JSONObject publisher = new JSONObject();
+                            publisher.put("ID", book.getInt(4));
+
+                            for (int i = 0; i < publishers.length(); i++)
+                                if (book.getInt(4) == publishers.getJSONObject(i).getInt("ID"))
+                                    publisher.put("Nome", publishers.getJSONObject(i).getString("Nome"));
+
+                            JSONArray authors = new JSONArray();
+                            JSONObject author = new JSONObject();
+                            for (int i = 0; i < aut.length(); i++) {
+                                do {
+                                    if (aut.getJSONObject(i).getInt("ID") == book_authors.getInt(1)
+                                            && book_authors.getInt(0) == book.getInt(0)) {
+                                        author.put("ID", aut.getJSONObject(i).getInt("ID"));
+                                        author.put("Nome", aut.getJSONObject(i).getString("Nome"));
+                                        authors.put(author);
+                                        author = new JSONObject();
+                                    }
+                                    book_authors.moveToNext();
+                                }
+                                while (!book_authors.isAfterLast());
+                                book_authors.moveToFirst();
+                            }
+
+                            JSONArray categories = new JSONArray();
+                            JSONObject category = new JSONObject();
+                            for (int i = 0; i < cat.length(); i++) {
+                                do {
+                                    if (cat.getJSONObject(i).getInt("ID") == book_categories.getInt(1)
+                                            && book_categories.getInt(0) == book.getInt(0)) {
+                                        category.put("ID", cat.getJSONObject(i).getInt("ID"));
+                                        category.put("Nome", cat.getJSONObject(i).getString("Nome"));
+                                        categories.put(category);
+                                        category = new JSONObject();
+                                    }
+
+                                    book_categories.moveToNext();
+                                }
+                                while (!book_categories.isAfterLast());
+                                book_categories.moveToFirst();
+                            }
+
+                            object = new JSONObject();
+                            object.put("ID", book.getInt(0));
+                            object.put("Titulo", book.getString(1));
+                            object.put("ISBN", book.getString(2));
+                            object.put("Numero_Paginas", book.getInt(3));
+                            object.put("IDEditora", publisher);
+                            object.put("Capa", book.getString(5));
+                            object.put("IDAutores", authors);
+                            object.put("IDCategorias", categories);
+                            array.put(object);
+                            book.moveToNext();
+                        }
+                        while (!book.isAfterLast());
+                        book.close();
+                        book_authors.close();
+                        book_categories.close();
+                        SQLResult.close();
+                        return array;
+                    }
+                    else return null;
                 }
-                while (!SQLResult.isAfterLast());
-                SQLResult.close();
-                return array;
+                else return null;
             }
             else return null;
         }
@@ -61,11 +125,72 @@ public class SQLiteStorage {
     public JSONObject getBook(int index) throws NullPointerException {
         try {
             if (checkCursor("SELECT * FROM Livro WHERE ID = " + index)) {
-                object = new JSONObject();
-                object.put("", SQLResult.getInt(0));
+                Cursor book = SQLResult;
+                if (checkCursor("SELECT * FROM Livro_Autor WHERE IDLivro = " + index)) {
+                    Cursor book_authors = SQLResult;
+                    if (checkCursor("SELECT * FROM Livro_Categoria WHERE IDLivro = " + index)) {
+                        Cursor book_categories = SQLResult;
 
-                SQLResult.close();
-                return object;
+                        JSONObject publisher = new JSONObject();
+                        publisher.put("ID", book.getInt(4));
+
+                        JSONArray publishers = this.getPublishers();
+                        for (int i = 0; i < publishers.length(); i++)
+                            if (book.getInt(4) == publishers.getJSONObject(i).getInt("ID"))
+                                publisher.put("Nome", publishers.getJSONObject(i).getString("Nome"));
+
+                        JSONArray authors = new JSONArray();
+                        JSONObject author = new JSONObject();
+                        JSONArray data = this.getAuthors();
+                        for (int i = 0; i < data.length(); i++) {
+                            do {
+                                if (data.getJSONObject(i).getInt("ID") == book_authors.getInt(1)) {
+                                    author.put("ID", data.getJSONObject(i).getInt("ID"));
+                                    author.put("Nome", data.getJSONObject(i).getString("Nome"));
+                                    authors.put(author);
+                                    author = new JSONObject();
+                                }
+                                book_authors.moveToNext();
+                            }
+                            while (!book_authors.isAfterLast());
+                            book_authors.moveToFirst();
+                        }
+                        book_authors.close();
+
+                        JSONArray categories = new JSONArray();
+                        JSONObject category = new JSONObject();
+                        data = this.getCategories();
+                        for (int i = 0; i < data.length(); i++) {
+                            do {
+                                if (data.getJSONObject(i).getInt("ID") == book_categories.getInt(1)) {
+                                    category.put("ID", data.getJSONObject(i).getInt("ID"));
+                                    category.put("Nome", data.getJSONObject(i).getString("Nome"));
+                                    categories.put(category);
+                                    category = new JSONObject();
+                                }
+                                book_categories.moveToNext();
+                            }
+                            while (!book_categories.isAfterLast());
+                            book_categories.moveToFirst();
+                        }
+                        book_categories.close();
+
+                        object = new JSONObject();
+                        object.put("ID", book.getInt(0));
+                        object.put("Titulo", book.getString(1));
+                        object.put("ISBN", book.getString(2));
+                        object.put("Numero_Paginas", book.getInt(3));
+                        object.put("IDEditora", publisher);
+                        object.put("Capa", book.getString(5));
+                        object.put("IDAutores", authors);
+                        object.put("IDCategorias", categories);
+                        book.close();
+                        SQLResult.close();
+                        return object;
+                    }
+                    else return null;
+                }
+                else return null;
             }
             else return null;
         }
