@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Biblioteca Anónima</string>
+    <string name="biblioteca_anonima">Biblioteca Anonima</string>
+    <string name="capa_livro">Capa_Livro</string>
+    <string name="Texto_Sinopse">Sinopse</string>
+    <string name="voltar">Voltar</string>
 </resources>
