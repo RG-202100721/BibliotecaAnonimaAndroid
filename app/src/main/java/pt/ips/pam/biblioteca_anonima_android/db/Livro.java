@@ -15,5 +15,5 @@ public class Livro {
     public int getFoto() {
         return Foto;
     }
-    public String getHabitat() {return Autores;}
+    public String getAutores() {return Autores;}
 }

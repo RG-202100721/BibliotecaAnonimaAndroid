@@ -68,11 +68,11 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case 0:
             case 1:
             default:
-                LivroViewHolder animalViewHolder = (LivroViewHolder) holder;
-                animalViewHolder.nome.setText(((Livro) items.get(position)).getNome());
-                animalViewHolder.foto.setImageResource(((Livro) items.get(position)).getFoto());
-                animalViewHolder.habitat.setText(((Livro) items.get(position)).getHabitat());
-                animalViewHolder.bind(items.get(position), itemClickListener);
+                LivroViewHolder livroViewHolder = (LivroViewHolder) holder;
+                livroViewHolder.nome.setText(((Livro) items.get(position)).getNome());
+                livroViewHolder.foto.setImageResource(((Livro) items.get(position)).getFoto());
+                livroViewHolder.habitat.setText(((Livro) items.get(position)).getAutores());
+                livroViewHolder.bind(items.get(position), itemClickListener);
                 break;
         }
     }
