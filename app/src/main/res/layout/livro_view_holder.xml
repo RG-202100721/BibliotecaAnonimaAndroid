@@ -22,7 +22,7 @@
             android:contentDescription="@string/capa_livro" />
 
         <TextView
-            android:id="@+id/texto_sinopse"
+            android:id="@+id/Autores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Texto_Autores"
@@ -30,11 +30,39 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/sinopse"
+            android:id="@+id/texto_Autores"
             android:layout_width="match_parent"
-            android:layout_height="360dp"
+            android:layout_height="wrap_content"
             android:text="TextView"
             android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/Editora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/editora"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/texto_editora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/ISBN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/isbn"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/Num_ISBN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
 
         <Button
             android:id="@+id/button"

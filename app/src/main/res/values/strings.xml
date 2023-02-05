@@ -2,6 +2,10 @@
     <string name="app_name">Biblioteca Anónima</string>
     <string name="biblioteca_anonima">Biblioteca Anonima</string>
     <string name="capa_livro">Capa_Livro</string>
-    <string name="Texto_Autores">Autores</string>
+    <string name="Texto_Autores">Autore(s)</string>
     <string name="voltar">Voltar</string>
+    <string name="editora">Editora</string>
+    <string name="nome">Nome:</string>
+    <string name="autor">Autor:</string>
+    <string name="isbn">ISBN:</string>
 </resources>

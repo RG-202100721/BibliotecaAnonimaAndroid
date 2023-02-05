@@ -20,12 +20,14 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     class LivroViewHolder extends RecyclerView.ViewHolder {
         TextView nome;
         ImageView foto;
-        TextView habitat;
+        TextView autores;
+        TextView Editora;
         LivroViewHolder(View view) {
             super(view);
             nome = view.findViewById(R.id.textoNome);
             foto = view.findViewById(R.id.iconeImagem);
-            habitat=view.findViewById(R.id.sinopse);
+            autores=view.findViewById(R.id.texto_Autores);
+            Editora=view.findViewById(R.id.texto_editora);
         }
         public void bind(final Object item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +73,8 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 LivroViewHolder livroViewHolder = (LivroViewHolder) holder;
                 livroViewHolder.nome.setText(((Livro) items.get(position)).getNome());
                 livroViewHolder.foto.setImageResource(((Livro) items.get(position)).getFoto());
-                livroViewHolder.habitat.setText(((Livro) items.get(position)).getAutores());
+                livroViewHolder.autores.setText(((Livro) items.get(position)).getAutores());
+                livroViewHolder.Editora.setText(((Livro) items.get(position)).getCategoria());
                 livroViewHolder.bind(items.get(position), itemClickListener);
                 break;
         }

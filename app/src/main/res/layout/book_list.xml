@@ -19,15 +19,91 @@
         app:srcCompat="@drawable/logo" />
 
     <TextView
-        android:id="@+id/Nome_livro"
+        android:id="@+id/Nome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:text="TextView"
-        android:textSize="34sp"
+        android:text="@string/nome"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/Livro_imagem"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.148" />
+
+    <TextView
+        android:id="@+id/Autor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/autor"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/Livro_imagem"
+        app:layout_constraintTop_toBottomOf="@+id/Nome"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/Nome_livro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/Nome"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.153" />
+
+    <TextView
+        android:id="@+id/Editora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="1dp"
+        android:text="@string/editora"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/Livro_imagem"
+        app:layout_constraintTop_toBottomOf="@+id/Autor" />
+
+    <TextView
+        android:id="@+id/Nome_Autor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/Autor"
+        app:layout_constraintTop_toBottomOf="@+id/Nome_livro" />
+
+    <TextView
+        android:id="@+id/ISBN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/isbn"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/Livro_imagem"
+        app:layout_constraintTop_toBottomOf="@+id/Editora" />
+
+    <TextView
+        android:id="@+id/Nome_Editora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/Editora"
+        app:layout_constraintTop_toBottomOf="@+id/Nome_Autor" />
+
+    <TextView
+        android:id="@+id/Num_ISBN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/ISBN"
+        app:layout_constraintTop_toBottomOf="@+id/Nome_Editora" />
 </androidx.constraintlayout.widget.ConstraintLayout>
