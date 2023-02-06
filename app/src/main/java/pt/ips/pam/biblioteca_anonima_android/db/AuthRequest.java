@@ -44,7 +44,7 @@ public class AuthRequest {
         progDialog.setMax(100);
         progDialog.setCancelable(false);
 
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        CookieHandler.getDefault();
     }
 
     private static final String Host = "https://biblioteca-anonima.onrender.com";

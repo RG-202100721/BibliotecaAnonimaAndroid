@@ -5,9 +5,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,12 +16,9 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import pt.ips.pam.biblioteca_anonima_android.db.AuthRequest;
@@ -115,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
                 startActivity(intent4);
                 break;
             case R.id.nav_insert:
-
+                
                 break;
             case R.id.nav_update:
 
