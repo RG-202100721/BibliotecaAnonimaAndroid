@@ -1,5 +1,6 @@
 package pt.ips.pam.biblioteca_anonima_android;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,75 +10,73 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.squareup.picasso.Picasso;
 
-import pt.ips.pam.biblioteca_anonima_android.db.Livro;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 
 public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     public interface OnItemClickListener {
-        void onItemClick(Object item);
+        void onItemClick(int pos);
     }
     class LivroViewHolder extends RecyclerView.ViewHolder {
         TextView nome;
         ImageView foto;
         TextView autores;
-        TextView Editora;
+        TextView ISBN;
         LivroViewHolder(View view) {
             super(view);
-            nome = view.findViewById(R.id.textoNome);
-            foto = view.findViewById(R.id.iconeImagem);
-            autores=view.findViewById(R.id.texto_Autores);
-            Editora=view.findViewById(R.id.texto_editora);
+            foto = view.findViewById(R.id.book_cover);
+            nome = view.findViewById(R.id.book_title);
+            autores = view.findViewById(R.id.book_author);
+            ISBN = view.findViewById(R.id.book_isbn);
         }
-        public void bind(final Object item, final OnItemClickListener listener) {
+        public void bind(final int pos, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(item);
+                    listener.onItemClick(pos);
                 }
             });
         }
     }
-    private final List<Object> items;
+    private final List<JSONObject> items;
     private final OnItemClickListener itemClickListener;
-    public ListaItemsAdapter(List<Object> items, OnItemClickListener clickListener) {
+    public ListaItemsAdapter(List<JSONObject> items, OnItemClickListener clickListener) {
         this.items = items;
         this.itemClickListener = clickListener;
     }
     @Override
-    public int getItemViewType(int position) {
-        Object currObject = items.get(position);
-        if(currObject instanceof Livro) {
-            return 1;
-        }
-        return 0;
-    }
-    @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView;
-        switch (viewType) {
-            case 0:
-            case 1:
-            default:
-                itemView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.book_list, parent, false);
-                return new LivroViewHolder(itemView);
-        }
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.book_list, parent, false);
+        return new LivroViewHolder(itemView);
     }
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        switch (holder.getItemViewType()) {
-            case 0:
-            case 1:
-            default:
-                LivroViewHolder livroViewHolder = (LivroViewHolder) holder;
-                livroViewHolder.nome.setText(((Livro) items.get(position)).getNome());
-                livroViewHolder.foto.setImageResource(((Livro) items.get(position)).getFoto());
-                livroViewHolder.autores.setText(((Livro) items.get(position)).getAutores());
-                livroViewHolder.Editora.setText(((Livro) items.get(position)).getCategoria());
-                livroViewHolder.bind(items.get(position), itemClickListener);
-                break;
+        LivroViewHolder livroViewHolder = (LivroViewHolder) holder;
+
+        JSONObject item = items.get(position);
+        try {
+            livroViewHolder.nome.setText(item.getString("Titulo"));
+
+            Picasso.get().load(item.getString("Capa")).into(livroViewHolder.foto);
+
+            StringBuilder text = new StringBuilder();
+            JSONArray autores = item.getJSONArray("IDAutores");
+            for (int i = 0; i < autores.length(); i++) text.append(autores.getJSONObject(i).getString("Nome")).append(", ");
+            livroViewHolder.autores.setText(text.delete(text.length() - 2, text.length()).toString());
+
+            livroViewHolder.ISBN.setText(item.getString("ISBN"));
         }
+        catch (JSONException e) {
+            livroViewHolder.nome.setText("error");
+        }
+
+        livroViewHolder.bind(position, itemClickListener);
     }
     @Override
     public int getItemCount() {

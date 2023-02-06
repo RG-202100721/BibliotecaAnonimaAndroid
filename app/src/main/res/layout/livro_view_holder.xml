@@ -7,8 +7,11 @@
 
     <LinearLayout
         android:id="@+id/Livro_Layout"
-        android:layout_width="354dp"
-        android:layout_height="628dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="50dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -16,10 +19,29 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/iconeImagem"
+            android:id="@+id/livro_capa"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/capa_livro"
+            android:minHeight="50dp"
+            tools:srcCompat="@drawable/cover_not_available" />
+
+        <TextView
+            android:id="@+id/ISBN"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/capa_livro" />
+            android:text="@string/isbn"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/livro_isbn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="TextView" />
 
         <TextView
             android:id="@+id/Autores"
@@ -30,9 +52,10 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/texto_Autores"
+            android:id="@+id/livro_autores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:text="TextView"
             android:textSize="16sp" />
 
@@ -45,41 +68,59 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/texto_editora"
+            android:id="@+id/livro_editora"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:text="TextView" />
 
         <TextView
-            android:id="@+id/ISBN"
+            android:id="@+id/paginas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/isbn"
+            android:text="Nº de Páginas:"
             android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/Num_ISBN"
+            android:id="@+id/livro_paginas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:text="TextView" />
 
-        <Button
-            android:id="@+id/button"
+        <TextView
+            android:id="@+id/categoria"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Categoria(s):"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/livro_categorias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:layout_marginBottom="5dp" />
+
+        <Button
+            android:id="@+id/b_livro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:onClick="onClick"
             android:text="@string/voltar" />
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textoNome"
-        android:layout_width="259dp"
-        android:layout_height="30dp"
+        android:id="@+id/livro_titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="TextView"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/Livro_Layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
