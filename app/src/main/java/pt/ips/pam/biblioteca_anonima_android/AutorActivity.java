@@ -72,6 +72,7 @@ public class AutorActivity extends AppCompatActivity implements NavigationView.O
             register.setVisible(false);
             register = menu.findItem(R.id.nav_logout);
             register.setVisible(true);
+            register.setTitle(String.format("Logout (%s)", SQLite.getAdmin()));
         }
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);

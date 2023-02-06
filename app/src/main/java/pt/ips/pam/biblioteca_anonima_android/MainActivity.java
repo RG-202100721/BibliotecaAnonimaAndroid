@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             register.setVisible(false);
             register = menu.findItem(R.id.nav_logout);
             register.setVisible(true);
+            register.setTitle(String.format("Logout (%s)", SQLite.getAdmin()));
         }
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
