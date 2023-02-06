@@ -8,4 +8,6 @@
     <string name="nome">Nome:</string>
     <string name="autor">Autor:</string>
     <string name="isbn">ISBN:</string>
+    <string name="nav_open">Abrir</string>
+    <string name="nav_close">Fechar</string>
 </resources>

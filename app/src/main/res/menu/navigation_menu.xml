@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText">
+
+    <item
+        android:id="@+id/nav_lists"
+        android:orderInCategory="0"
+        android:title="Listas"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/nav_books"
+                android:icon="@drawable/book"
+                android:orderInCategory="0"
+                android:title="Livros" />
+            <item
+                android:id="@+id/nav_categories"
+                android:icon="@drawable/categories"
+                android:orderInCategory="3"
+                android:title="Categorias" />
+            <item
+                android:id="@+id/nav_publishers"
+                android:icon="@drawable/publisher"
+                android:orderInCategory="2"
+                android:title="Editoras" />
+            <item
+                android:id="@+id/nav_authors"
+                android:icon="@drawable/authors"
+                android:orderInCategory="1"
+                android:title="Autores" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/nav_crud"
+        android:orderInCategory="1"
+        android:title="Operações CRUD"
+        android:visible="false"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/nav_insert"
+                android:icon="@drawable/insert"
+                android:title="Criar" />
+            <item
+                android:id="@+id/nav_update"
+                android:icon="@drawable/update"
+                android:title="Atualizar" />
+            <item
+                android:id="@+id/nav_delete"
+                android:icon="@drawable/delete"
+                android:title="Apagar" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/nav_admin"
+        android:orderInCategory="2"
+        android:title="Admin"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/nav_login"
+                android:icon="@drawable/login"
+                android:visible="true"
+                android:title="Login" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/logout"
+                android:visible="false"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

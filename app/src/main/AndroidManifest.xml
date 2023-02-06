@@ -17,6 +17,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".AutorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditoraActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CategoriaActivity"
+            android:exported="false" />
+        <activity
             android:name=".ListaItemsAdapter"
             android:exported="false" />
         <activity

@@ -44,9 +44,11 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
     private final List<JSONObject> items;
     private final OnItemClickListener itemClickListener;
-    public ListaItemsAdapter(List<JSONObject> items, OnItemClickListener clickListener) {
+    private final Context context;
+    public ListaItemsAdapter(List<JSONObject> items, OnItemClickListener clickListener, Context context) {
         this.items = items;
         this.itemClickListener = clickListener;
+        this.context = context;
     }
     @Override
     @NonNull
@@ -57,26 +59,30 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        LivroViewHolder livroViewHolder = (LivroViewHolder) holder;
+        switch (context.getClass().getSimpleName()) {
+            case "MainActivity":
+                LivroViewHolder livroViewHolder = (LivroViewHolder) holder;
 
-        JSONObject item = items.get(position);
-        try {
-            livroViewHolder.nome.setText(item.getString("Titulo"));
+                JSONObject item = items.get(position);
+                try {
+                    livroViewHolder.nome.setText(item.getString("Titulo"));
 
-            Picasso.get().load(item.getString("Capa")).into(livroViewHolder.foto);
+                    Picasso.get().load(item.getString("Capa")).into(livroViewHolder.foto);
 
-            StringBuilder text = new StringBuilder();
-            JSONArray autores = item.getJSONArray("IDAutores");
-            for (int i = 0; i < autores.length(); i++) text.append(autores.getJSONObject(i).getString("Nome")).append(", ");
-            livroViewHolder.autores.setText(text.delete(text.length() - 2, text.length()).toString());
+                    StringBuilder text = new StringBuilder();
+                    JSONArray autores = item.getJSONArray("IDAutores");
+                    for (int i = 0; i < autores.length(); i++) text.append(autores.getJSONObject(i).getString("Nome")).append(", ");
+                    livroViewHolder.autores.setText(text.delete(text.length() - 2, text.length()).toString());
 
-            livroViewHolder.ISBN.setText(item.getString("ISBN"));
+                    livroViewHolder.ISBN.setText(item.getString("ISBN"));
+                }
+                catch (JSONException e) {
+                    livroViewHolder.nome.setText("error");
+                }
+
+                livroViewHolder.bind(position, itemClickListener);
+                break;
         }
-        catch (JSONException e) {
-            livroViewHolder.nome.setText("error");
-        }
-
-        livroViewHolder.bind(position, itemClickListener);
     }
     @Override
     public int getItemCount() {
