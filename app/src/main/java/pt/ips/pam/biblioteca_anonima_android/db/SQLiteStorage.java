@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import pt.ips.pam.biblioteca_anonima_android.MainActivity;
+import pt.ips.pam.biblioteca_anonima_android.SplashActivity;
 
 public class SQLiteStorage {
 
@@ -636,7 +637,7 @@ public class SQLiteStorage {
     }
 
     private void goMain() {
-        Intent goToStart = new Intent(currentContext, MainActivity.class);
+        Intent goToStart = new Intent(currentContext, SplashActivity.class);
         ContextCompat.startActivity(currentContext, goToStart, null);
     }
 

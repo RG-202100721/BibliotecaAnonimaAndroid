@@ -7,8 +7,7 @@
     <item
         android:id="@+id/nav_lists"
         android:orderInCategory="0"
-        android:title="Listas"
-        app:showAsAction="never">
+        android:title="Listas">
         <menu>
             <item
                 android:id="@+id/nav_books"
@@ -37,8 +36,7 @@
         android:id="@+id/nav_crud"
         android:orderInCategory="1"
         android:title="Operações CRUD"
-        android:visible="false"
-        app:showAsAction="never">
+        android:visible="false">
         <menu>
             <item
                 android:id="@+id/nav_insert"
@@ -52,14 +50,17 @@
                 android:id="@+id/nav_delete"
                 android:icon="@drawable/delete"
                 android:title="Apagar" />
+            <item
+                android:id="@+id/nav_reset"
+                android:icon="@drawable/reset"
+                android:title="Reset" />
         </menu>
     </item>
 
     <item
         android:id="@+id/nav_admin"
         android:orderInCategory="2"
-        android:title="Admin"
-        app:showAsAction="never">
+        android:title="Admin">
         <menu>
             <item
                 android:id="@+id/nav_login"

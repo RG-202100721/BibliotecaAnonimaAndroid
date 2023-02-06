@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -26,6 +27,7 @@ import java.util.Objects;
 
 import pt.ips.pam.biblioteca_anonima_android.db.AuthRequest;
 import pt.ips.pam.biblioteca_anonima_android.db.SQLiteStorage;
+import pt.ips.pam.biblioteca_anonima_android.db.VolleyHandler;
 
 public class EditoraActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -56,16 +58,23 @@ public class EditoraActivity extends AppCompatActivity implements NavigationView
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public void setupMenu() {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        if (SQLite.getAdmin() != null) {
-            findViewById(R.id.nav_crud).setVisibility(View.VISIBLE);
-            findViewById(R.id.nav_login).setVisibility(View.INVISIBLE);
-            findViewById(R.id.nav_logout).setVisibility(View.VISIBLE);
-        }
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (SQLite.getAdmin() != null) {
+            Menu menu = navigationView.getMenu();
+            MenuItem register = menu.findItem(R.id.nav_crud);
+            register.setVisible(true);
+            register = menu.findItem(R.id.nav_login);
+            register.setVisible(false);
+            register = menu.findItem(R.id.nav_logout);
+            register.setVisible(true);
+        }
+
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
     @Override
@@ -101,8 +110,18 @@ public class EditoraActivity extends AppCompatActivity implements NavigationView
             case R.id.nav_delete:
 
                 break;
+            case R.id.nav_reset:
+                SQLite.reset(new VolleyHandler.callback() {
+                    @Override
+                    public void onSuccess() {
+                        Intent splash = new Intent(EditoraActivity.this, SplashActivity.class);
+                        startActivity(splash);
+                    }
+                });
+                break;
             case R.id.nav_login:
-
+                Intent login = new Intent(EditoraActivity.this, LoginActivity.class);
+                startActivity(login);
                 break;
             case R.id.nav_logout:
                 new AuthRequest(EditoraActivity.this).logout();

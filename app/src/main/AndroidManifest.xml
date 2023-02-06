@@ -17,29 +17,33 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".AutorActivity"
-            android:label="Biblioteca Anónima - Autores"
-            android:exported="false" />
-        <activity
-            android:name=".EditoraActivity"
-            android:label="Biblioteca Anónima - Editoras"
-            android:exported="false" />
-        <activity
-            android:name=".CategoriaActivity"
-            android:label="Biblioteca Anónima - Categorias"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:label="Biblioteca Anónima - Login" />
+        <activity
+            android:name=".AutorActivity"
+            android:exported="false"
+            android:label="Biblioteca Anónima - Autores" />
+        <activity
+            android:name=".EditoraActivity"
+            android:exported="false"
+            android:label="Biblioteca Anónima - Editoras" />
+        <activity
+            android:name=".CategoriaActivity"
+            android:exported="false"
+            android:label="Biblioteca Anónima - Categorias" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false">
         </activity>
         <activity
             android:name=".LivroActivity"

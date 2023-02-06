@@ -11,10 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,46 +31,41 @@ import pt.ips.pam.biblioteca_anonima_android.db.AuthRequest;
 import pt.ips.pam.biblioteca_anonima_android.db.SQLiteStorage;
 import pt.ips.pam.biblioteca_anonima_android.db.VolleyHandler;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class LoginActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private SQLiteStorage SQLite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        SQLite = new SQLiteStorage(MainActivity.this);
+        setContentView(R.layout.activity_login);
+        SQLite = new SQLiteStorage(LoginActivity.this);
         setupMenu();
 
-        //lista para recyclerView
-        List<JSONObject> lista = new ArrayList<>();
-        try {
-            JSONArray array = SQLite.getBooks();
-            for (int i = 0; i < array.length(); i++) lista.add(array.getJSONObject(i));
-        }
-        catch (JSONException e) { e.printStackTrace(); }
+        findViewById(R.id.b_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView conta = findViewById(R.id.login_conta);
+                TextView pass = findViewById(R.id.login_pass);
 
-        RecyclerView recyclerView = findViewById(R.id.recycle_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        ListaItemsAdapter adapter = new ListaItemsAdapter(lista, new
-                ListaItemsAdapter.OnItemClickListener() {
+                JSONObject info = new JSONObject();
+                try {
+                    info.put("Numero_Conta", conta.getText().toString());
+                    info.put("Password", pass.getText().toString());
+                }
+                catch (JSONException e) {
+                    Log.d("JSONException", e.toString());
+                }
+
+                new AuthRequest(LoginActivity.this).login(info, new VolleyHandler.callback() {
                     @Override
-                    //metodo que muda o layout no click do objeto na recyclerView
-                    //e coloca o nome,imagem e autores nas textviews e imageviews vazias no layout livro_view_holder
-                    public void onItemClick(int pos) {
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("position", pos);
-                        Intent intent = new Intent(MainActivity.this, LivroActivity.class);
-                        intent.putExtras(bundle);
+                    public void onSuccess() {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
-                }, MainActivity.this);
-        recyclerView.setAdapter(adapter);
+                });
+            }
+        });
     }
 
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -97,20 +99,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_books:
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                break;
-            case R.id.nav_categories:
-                Intent intent = new Intent(MainActivity.this, CategoriaActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.nav_publishers:
-                Intent intent2 = new Intent(MainActivity.this, EditoraActivity.class);
+            case R.id.nav_categories:
+                Intent intent2 = new Intent(LoginActivity.this, CategoriaActivity.class);
                 startActivity(intent2);
                 break;
-            case R.id.nav_authors:
-                Intent intent3 = new Intent(MainActivity.this, AutorActivity.class);
+            case R.id.nav_publishers:
+                Intent intent3 = new Intent(LoginActivity.this, EditoraActivity.class);
                 startActivity(intent3);
+                break;
+            case R.id.nav_authors:
+                Intent intent4 = new Intent(LoginActivity.this, AutorActivity.class);
+                startActivity(intent4);
                 break;
             case R.id.nav_insert:
 
@@ -125,17 +127,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 SQLite.reset(new VolleyHandler.callback() {
                     @Override
                     public void onSuccess() {
-                        Intent splash = new Intent(MainActivity.this, SplashActivity.class);
+                        Intent splash = new Intent(LoginActivity.this, SplashActivity.class);
                         startActivity(splash);
                     }
                 });
                 break;
             case R.id.nav_login:
-                Intent login = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(login);
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_logout:
-                new AuthRequest(MainActivity.this).logout();
+                new AuthRequest(LoginActivity.this).logout();
                 break;
         }
         return true;

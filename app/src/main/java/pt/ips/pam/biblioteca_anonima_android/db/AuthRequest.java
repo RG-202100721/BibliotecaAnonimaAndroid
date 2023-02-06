@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.ips.pam.biblioteca_anonima_android.MainActivity;
+import pt.ips.pam.biblioteca_anonima_android.SplashActivity;
 
 public class AuthRequest {
 
@@ -194,7 +195,7 @@ public class AuthRequest {
     }
 
     private void goMain() {
-        Intent goToStart = new Intent(currentContext, MainActivity.class);
+        Intent goToStart = new Intent(currentContext, SplashActivity.class);
         ContextCompat.startActivity(currentContext, goToStart, null);
     }
 }
