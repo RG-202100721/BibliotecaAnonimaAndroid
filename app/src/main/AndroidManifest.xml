@@ -18,15 +18,15 @@
         tools:targetApi="31">
         <activity
             android:name=".AutorActivity"
+            android:label="Biblioteca Anónima - Autores"
             android:exported="false" />
         <activity
             android:name=".EditoraActivity"
+            android:label="Biblioteca Anónima - Editoras"
             android:exported="false" />
         <activity
             android:name=".CategoriaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ListaItemsAdapter"
+            android:label="Biblioteca Anónima - Categorias"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

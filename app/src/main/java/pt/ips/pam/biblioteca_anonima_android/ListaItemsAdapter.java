@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -19,9 +20,6 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    public interface OnItemClickListener {
-        void onItemClick(int pos);
-    }
     class LivroViewHolder extends RecyclerView.ViewHolder {
         TextView nome;
         ImageView foto;
@@ -31,7 +29,7 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             super(view);
             foto = view.findViewById(R.id.book_cover);
             nome = view.findViewById(R.id.book_title);
-            autores = view.findViewById(R.id.book_author);
+            autores = view.findViewById(R.id.book_authors);
             ISBN = view.findViewById(R.id.book_isbn);
         }
         public void bind(final int pos, final OnItemClickListener listener) {
@@ -42,20 +40,66 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             });
         }
     }
+    class AutorViewHolder extends RecyclerView.ViewHolder {
+        TextView nome;
+        TextView country;
+        AutorViewHolder(View view) {
+            super(view);
+            nome = view.findViewById(R.id.author_title);
+            country = view.findViewById(R.id.author_country);
+        }
+    }
+    class EditoraViewHolder extends RecyclerView.ViewHolder {
+        TextView nome;
+        ImageView foto;
+        TextView country;
+        EditoraViewHolder(View view) {
+            super(view);
+            foto = view.findViewById(R.id.publisher_cover);
+            nome = view.findViewById(R.id.publisher_title);
+            country = view.findViewById(R.id.publisher_country);
+        }
+    }
+    class CategoriaViewHolder extends RecyclerView.ViewHolder {
+        TextView nome;
+        CategoriaViewHolder(View view) {
+            super(view);
+            nome = view.findViewById(R.id.category_title);
+        }
+    }
+
     private final List<JSONObject> items;
     private final OnItemClickListener itemClickListener;
     private final Context context;
-    public ListaItemsAdapter(List<JSONObject> items, OnItemClickListener clickListener, Context context) {
+    public ListaItemsAdapter(List<JSONObject> items, @Nullable OnItemClickListener clickListener, Context context) {
         this.items = items;
         this.itemClickListener = clickListener;
         this.context = context;
     }
+    public interface OnItemClickListener {
+        void onItemClick(int pos);
+    }
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.book_list, parent, false);
-        return new LivroViewHolder(itemView);
+        switch (context.getClass().getSimpleName()) {
+            case "MainActivity":
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.book_list, parent, false);
+                return new LivroViewHolder(itemView);
+            case "AutorActivity":
+                View itemView2 = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.author_list, parent, false);
+                return new AutorViewHolder(itemView2);
+            case "EditoraActivity":
+                View itemView3 = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.publisher_list, parent, false);
+                return new EditoraViewHolder(itemView3);
+            default:
+                View itemView4 = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.category_list, parent, false);
+                return new CategoriaViewHolder(itemView4);
+        }
     }
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
@@ -81,6 +125,45 @@ public class ListaItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
 
                 livroViewHolder.bind(position, itemClickListener);
+                break;
+
+            case "AutorActivity":
+                AutorViewHolder autorViewHolder = (AutorViewHolder) holder;
+
+                JSONObject item2 = items.get(position);
+                try {
+                    autorViewHolder.nome.setText(item2.getString("Nome"));
+                    autorViewHolder.country.setText(item2.getString("Pais"));
+                }
+                catch (JSONException e) {
+                    autorViewHolder.nome.setText("error");
+                }
+                break;
+
+            case "EditoraActivity":
+                EditoraViewHolder editoraViewHolder = (EditoraViewHolder) holder;
+
+                JSONObject item3 = items.get(position);
+                try {
+                    editoraViewHolder.nome.setText(item3.getString("Nome"));
+                    editoraViewHolder.country.setText(item3.getString("Pais"));
+                    Picasso.get().load(item3.getString("Logo")).into(editoraViewHolder.foto);
+                }
+                catch (JSONException e) {
+                    editoraViewHolder.nome.setText("error");
+                }
+                break;
+
+            case "CategoriaActivity":
+                CategoriaViewHolder categoriaViewHolder = (CategoriaViewHolder) holder;
+
+                JSONObject item4 = items.get(position);
+                try {
+                    categoriaViewHolder.nome.setText(item4.getString("Nome"));
+                }
+                catch (JSONException e) {
+                    categoriaViewHolder.nome.setText("error");
+                }
                 break;
         }
     }
